@@ -1,6 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore/lite';
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
  
@@ -12,11 +13,11 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const firebase = initializeApp(firebaseConfig);
-
+const auth = getAuth(firebase);
 const db = getFirestore(firebase)
 
 export {
-  firebase,
+  auth,
   db
 }
 
