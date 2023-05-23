@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "@/contexts/AuthUserContext";
+import { useToast } from "@chakra-ui/react";
 
 import {
   Flex,
@@ -19,31 +19,50 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { auth, createUserWithEmailAndPassword } from "@/libs/firebase";
-// import { FaUserAlt, FaLock } from "react-icons/fa";
-// const CFaUserAlt = chakra(FaUserAlt);
-// const CFaLock = chakra(FaLock);
+import ButtonComponenet from "@/components/button";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [passwordOne, setPasswordOne] = useState("");
   const [passwordTwo, setPasswordTwo] = useState("");
   const router = useRouter();
+  const toast = useToast();
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (event) => {
     setError(null);
+    setIsLoading(true);
 
-    //check if passwords match. If they do, create user in Firebase
-    // and redirect to your logged in page.
-    const createdUser = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      passwordOne
-    );
-    console.log("createdUser", createdUser);
-    if (passwordOne === passwordTwo) {
-    } else {
-      setError("Password do not match");
+    try {
+      if (passwordOne !== passwordTwo) {
+        throw new Error("Passwords not match");
+      }
+
+      const createdUser = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        passwordOne
+      );
+
+      toast({
+        description: "User created successfully!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      toast({
+        description: error?.message || "Some error occured while registering.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
     }
   };
 
@@ -102,18 +121,26 @@ const SignUp = () => {
                   id="signUpPassword"
                   placeholder="Password"
                 />
-
-                {/* <InputRightElement width="4.5rem">
-                  <Button h="1.75rem" size="sm" onClick={handleShowClick}>
-                    {showPassword ? "Hide" : "Show"}
-                  </Button>
-                </InputRightElement> */}
               </InputGroup>
-              <FormHelperText textAlign="right">
-                <Link>forgot password?</Link>
-              </FormHelperText>
             </FormControl>
-            <Button
+            <FormControl>
+              <InputGroup>
+                <InputLeftElement
+                  pointerEvents="none"
+                  color="gray.300"
+                  // children={<CFaLock color="gray.300" />}
+                />
+                <Input
+                  type="password"
+                  name="passwordTwo"
+                  value={passwordTwo}
+                  onChange={(event) => setPasswordTwo(event.target.value)}
+                  id="signUpPassword2"
+                  placeholder="Confirm Password"
+                />
+              </InputGroup>
+            </FormControl>
+            {/* <Button
               borderRadius={0}
               type="submit"
               variant="solid"
@@ -121,17 +148,12 @@ const SignUp = () => {
               width="full"
               onClick={onSubmit}
             >
-              Login
-            </Button>
+              Register
+            </Button> */}
+            <ButtonComponenet onSubmit={onSubmit} isLoading={isLoading} />
           </Stack>
         </Box>
       </Stack>
-      <Box>
-        New to us?{" "}
-        <Link color="teal.500" href="#">
-          Sign Up
-        </Link>
-      </Box>
     </Flex>
   );
 };
