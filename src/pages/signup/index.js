@@ -19,7 +19,7 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { auth, createUserWithEmailAndPassword } from "@/libs/firebase";
-import ButtonComponenet from "@/components/button";
+import ButtonComponenet from "@/components/button/button";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
