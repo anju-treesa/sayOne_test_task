@@ -136,7 +136,11 @@ const LoginPage = () => {
               </InputGroup>
             </FormControl>
 
-            <ButtonComponenet onSubmit={onSubmit} isLoading={isLoading} />
+            <ButtonComponenet
+              onSubmit={onSubmit}
+              isLoading={isLoading}
+              title="Login"
+            />
           </Stack>
         </Box>
       </Stack>

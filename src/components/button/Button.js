@@ -1,8 +1,13 @@
 import React from "react";
 
-import { Button, Stack } from "@chakra-ui/react";
+import { Button, Stack, ButtonProps } from "@chakra-ui/react";
 
-export default function ButtonComponenet({ onSubmit, isLoading }) {
+export default function ButtonComponenet({
+  onSubmit,
+  isLoading,
+  title,
+  ...props
+}) {
   return (
     <div>
       <Stack direction="row" spacing={4}>
@@ -15,8 +20,9 @@ export default function ButtonComponenet({ onSubmit, isLoading }) {
           variant="solid"
           width="full"
           onClick={onSubmit}
+          {...props}
         >
-          Submit
+          {title}
         </Button>
       </Stack>
     </div>

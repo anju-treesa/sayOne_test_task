@@ -164,7 +164,11 @@ const SignUp = () => {
               </InputGroup>
             </FormControl>
 
-            <ButtonComponenet onSubmit={onSubmit} isLoading={isLoading} />
+            <ButtonComponenet
+              onSubmit={onSubmit}
+              isLoading={isLoading}
+              title="Sigin Up"
+            />
           </Stack>
         </Box>
       </Stack>
