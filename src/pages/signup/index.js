@@ -1,25 +1,22 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { useToast } from "@chakra-ui/react";
+import * as Yup from "yup";
 
 import {
   Flex,
   Heading,
-  Input,
-  Button,
   InputGroup,
   Stack,
   InputLeftElement,
   chakra,
   Box,
-  Link,
   Avatar,
   FormControl,
-  FormHelperText,
-  InputRightElement,
 } from "@chakra-ui/react";
 import { auth, createUserWithEmailAndPassword } from "@/libs/firebase";
-import ButtonComponenet from "@/components/button/button";
+import ButtonComponenet from "@/components/button/Button";
+import CustomInput from "@/components/input/Input";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -31,13 +28,35 @@ const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (event) => {
-    setError(null);
-    setIsLoading(true);
+    event.preventDefault();
+
+    const schema = Yup.object().shape({
+      email: Yup.string()
+        .email("Email must be valid!")
+        .required("Email is required!"),
+      passwordOne: Yup.string()
+        .min(8, "Password needs to be minimum 8 characters in length")
+        .required(),
+      passwordTwo: Yup.string()
+        .min(8, "Confirm password needs to be minimum 8 characters in length")
+        .required()
+        .oneOf([Yup.ref("passwordOne"), null], "Passwords must match"),
+    });
 
     try {
-      if (passwordOne !== passwordTwo) {
-        throw new Error("Passwords not match");
-      }
+      await schema.validate(
+        {
+          email,
+          passwordOne,
+          passwordTwo,
+        },
+        {
+          abortEarly: false,
+        }
+      );
+
+      setError(null);
+      setIsLoading(true);
 
       const createdUser = await createUserWithEmailAndPassword(
         auth,
@@ -56,8 +75,11 @@ const SignUp = () => {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
+
       toast({
-        description: error?.message || "Some error occured while registering.",
+        description: Array.isArray(error?.inner)
+          ? error?.inner[0]?.message
+          : error?.message || "Some error occured while registering.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -96,12 +118,12 @@ const SignUp = () => {
                   pointerEvents="none"
                   // children={<CFaUserAlt color="gray.300" />}
                 />
-                <Input
+                <CustomInput
                   type="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   name="email"
-                  id="signUpEmail"
+                  id="email"
                   placeholder="Email"
                 />
               </InputGroup>
@@ -113,12 +135,12 @@ const SignUp = () => {
                   color="gray.300"
                   // children={<CFaLock color="gray.300" />}
                 />
-                <Input
+                <CustomInput
                   type="password"
                   name="passwordOne"
                   value={passwordOne}
                   onChange={(event) => setPasswordOne(event.target.value)}
-                  id="signUpPassword"
+                  id="passwordOne"
                   placeholder="Password"
                 />
               </InputGroup>
@@ -130,26 +152,17 @@ const SignUp = () => {
                   color="gray.300"
                   // children={<CFaLock color="gray.300" />}
                 />
-                <Input
+                <CustomInput
                   type="password"
                   name="passwordTwo"
                   value={passwordTwo}
                   onChange={(event) => setPasswordTwo(event.target.value)}
-                  id="signUpPassword2"
+                  id="passwordTwo"
                   placeholder="Confirm Password"
                 />
               </InputGroup>
             </FormControl>
-            {/* <Button
-              borderRadius={0}
-              type="submit"
-              variant="solid"
-              colorScheme="teal"
-              width="full"
-              onClick={onSubmit}
-            >
-              Register
-            </Button> */}
+
             <ButtonComponenet onSubmit={onSubmit} isLoading={isLoading} />
           </Stack>
         </Box>
