@@ -73,6 +73,7 @@ const SignUp = () => {
       });
 
       setIsLoading(false);
+      router.push("/home");
     } catch (error) {
       setIsLoading(false);
 
