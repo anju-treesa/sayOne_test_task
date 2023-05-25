@@ -9,22 +9,16 @@ export default function ButtonComponent({
   ...props
 }) {
   return (
-    <div>
-      <Stack direction="row" spacing={4}>
-        <Button
-          isLoading={isLoading}
-          loadingText="Submitting"
-          colorScheme="teal"
-          borderRadius={0}
-          type="submit"
-          variant="solid"
-          width="full"
-          onClick={onSubmit}
-          {...props}
-        >
-          {title}
-        </Button>
-      </Stack>
-    </div>
+    <Button
+      isLoading={isLoading}
+      loadingText="Submitting"
+      colorScheme="teal"
+      borderRadius={0}
+      variant="solid"
+      onClick={onSubmit}
+      {...props}
+    >
+      {title}
+    </Button>
   );
 }

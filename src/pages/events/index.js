@@ -75,9 +75,15 @@ function EventListingPage() {
         Events
       </Box>
 
-      {/* <Box w="20"> */}
-      <Button title="Add Events" onSubmit={onOpen} />
-      {/* </Box> */}
+      <Box w="full" display="flex" justifyContent="flex-end">
+        <Button
+          h="12"
+          rounded="lg"
+          display="block"
+          title="Add Events"
+          onSubmit={onOpen}
+        />
+      </Box>
 
       <Modal
         initialFocusRef={initialRef}
