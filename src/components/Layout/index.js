@@ -7,7 +7,7 @@ const Layout = ({ children }) => {
   return (
     <main>
       <Header />
-      <Box pt="10" as="section" bg="gray.100" h="calc(100vh - 6rem)">
+      <Box pt="6" as="section" bg="gray.100" h="calc(100vh - 6rem)">
         {children}
       </Box>
     </main>

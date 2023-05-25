@@ -3,7 +3,7 @@ import { Box, Button, Container } from "@chakra-ui/react";
 
 const Header = () => {
   return (
-    <Box as="header" w="full" h="20" p="4" boxShadow="md">
+    <Box as="header" w="full" h="20" p="4" boxShadow="dark-lg">
       <Container maxW="container.lg">
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box
