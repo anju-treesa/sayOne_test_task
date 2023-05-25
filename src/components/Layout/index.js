@@ -1,3 +1,4 @@
+import { Box } from "@chakra-ui/react";
 import React from "react";
 
 import Header from "./Header";
@@ -6,7 +7,9 @@ const Layout = ({ children }) => {
   return (
     <main>
       <Header />
-      {children}
+      <Box as="section" bg="gray.100" h="calc(100vh - 6rem)">
+        {children}
+      </Box>
     </main>
   );
 };

@@ -11,6 +11,8 @@ import {
   Input,
   ModalFooter,
   ModalOverlay,
+  Container,
+  Box,
 } from "@chakra-ui/react";
 
 import Button from "@/components/button/Button";
@@ -62,10 +64,20 @@ function EventListingPage() {
     });
   };
   return (
-    <div>
-      <h1>Events</h1>
+    <Container maxW="container.xl">
+      <Box
+        as="h2"
+        fontSize="2xl"
+        fontWeight="black"
+        letterSpacing="wider"
+        textTransform="uppercase"
+      >
+        Events
+      </Box>
 
+      {/* <Box w="20"> */}
       <Button title="Add Events" onSubmit={onOpen} />
+      {/* </Box> */}
 
       <Modal
         initialFocusRef={initialRef}
@@ -140,7 +152,7 @@ function EventListingPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </Container>
   );
 }
 
