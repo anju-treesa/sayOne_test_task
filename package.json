@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.6.1",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
+    "@tanstack/react-table": "^8.9.1",
     "firebase": "^9.22.0",
     "framer-motion": "^10.12.13",
     "next": "13.4.3",

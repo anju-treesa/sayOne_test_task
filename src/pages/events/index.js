@@ -28,6 +28,7 @@ import {
   setDoc,
   doc,
 } from "firebase/firestore";
+import DataTable from "@/components/Table";
 
 function EventListingPage() {
   const [categories, setCategories] = useState([]);
@@ -83,6 +84,9 @@ function EventListingPage() {
           title="Add Events"
           onSubmit={onOpen}
         />
+      </Box>
+      <Box mt="10" bg="white">
+        <DataTable />
       </Box>
 
       <Modal
