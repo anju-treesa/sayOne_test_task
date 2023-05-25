@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button, Stack, ButtonProps } from "@chakra-ui/react";
 
-export default function ButtonComponenet({
+export default function ButtonComponent({
   onSubmit,
   isLoading,
   title,

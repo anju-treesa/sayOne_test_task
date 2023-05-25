@@ -1,14 +1,14 @@
 // pages/_app.js
+import Layout from "@/components/Layout";
 import { ChakraProvider } from "@chakra-ui/react";
 
-import { AuthUserProvider } from "../contexts/AuthUserContext";
 function MyApp({ Component, pageProps }) {
   return (
-    <AuthUserProvider>
-      <ChakraProvider>
+    <ChakraProvider>
+      <Layout>
         <Component {...pageProps} />
-      </ChakraProvider>
-    </AuthUserProvider>
+      </Layout>
+    </ChakraProvider>
   );
 }
 

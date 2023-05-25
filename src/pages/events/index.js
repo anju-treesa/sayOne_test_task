@@ -27,8 +27,8 @@ import {
   doc,
 } from "firebase/firestore";
 
-function HomePageCommon() {
-  const [userDataArray, setUserDataArray] = useState([]);
+function EventListingPage() {
+  const [categories, setCategories] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
@@ -37,29 +37,21 @@ function HomePageCommon() {
   const [price, setPrice] = useState("");
 
   useEffect(() => {
-    let unsubscribed = false;
+    (async () => {
+      try {
+        const q = query(collection(db, "categories"));
+        // , where("capital", "==", true)
+        const querySnapshot = await getDocs(q);
 
-    getDocs(collection(db, "categories"))
-      .then((querySnapshot) => {
-        if (unsubscribed) return; // unsubscribed? do nothing.
-        console.log(querySnapshot, "querySnapshot");
-        const newUserDataArray = querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
+        const data = querySnapshot.map((doc) => ({
           id: doc.id,
+          ...doc.data(),
         }));
 
-        setUserDataArray(newUserDataArray);
-      })
-      .catch((err) => {
-        if (unsubscribed) return; // unsubscribed? do nothing.
-
-        // TODO: Handle errors
-        console.error("Failed to retrieve data", err);
-      });
-
-    return () => (unsubscribed = true);
+        console.log("data", data);
+      } catch (error) {}
+    })();
   }, []);
-  console.log(userDataArray, "userDataArray");
 
   const onEventSaveHandler = async (event) => {
     console.log(event, "event");
@@ -71,7 +63,7 @@ function HomePageCommon() {
   };
   return (
     <div>
-      <h1>Categories Listing Page</h1>
+      <h1>Events</h1>
 
       <Button title="Add Events" onSubmit={onOpen} />
 
@@ -142,7 +134,7 @@ function HomePageCommon() {
               colorScheme="blue"
               mr={3}
               title="Save"
-              onClick={onEventSaveHandler()}
+              onClick={onEventSaveHandler}
             />
             <Button rounded="lg" onClick={onClose} title="Cancel" />
           </ModalFooter>
@@ -152,4 +144,4 @@ function HomePageCommon() {
   );
 }
 
-export default HomePageCommon;
+export default EventListingPage;
