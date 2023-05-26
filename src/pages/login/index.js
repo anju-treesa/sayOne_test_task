@@ -25,11 +25,6 @@ const LoginPage = () => {
   const toast = useToast();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { authUser, loading } = useFirebaseAuth();
-
-  useEffect(() => {
-    if (!loading && !authUser) router.push("/");
-  }, [authUser, loading]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -64,7 +59,6 @@ const LoginPage = () => {
       );
 
       setIsLoading(false);
-      router.push("/home");
     } catch (error) {
       setIsLoading(false);
 
@@ -81,8 +75,8 @@ const LoginPage = () => {
   return (
     <Flex
       flexDirection="column"
-      width="100wh"
-      height="100vh"
+      h="100%"
+      w="100%"
       backgroundColor="gray.200"
       justifyContent="center"
       alignItems="center"

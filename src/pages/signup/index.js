@@ -91,9 +91,9 @@ const SignUp = () => {
 
   return (
     <Flex
+      h="100%"
+      w="100%"
       flexDirection="column"
-      width="100wh"
-      height="100vh"
       backgroundColor="gray.200"
       justifyContent="center"
       alignItems="center"
