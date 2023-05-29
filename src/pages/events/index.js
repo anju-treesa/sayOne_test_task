@@ -148,6 +148,7 @@ function EventListingPage() {
                 placeholder="Select Category"
                 onChange={onFormChangeHandler("categoryId")}
                 value={formData.categoryId}
+                style={{ textTransform: "capitalize" }}
               >
                 {categories.map(({ name, id }) => (
                   <option
