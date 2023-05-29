@@ -64,7 +64,7 @@ const DataTable = () => {
   });
 
   return (
-    <Table>
+    <Table shadow="md">
       <Thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <Tr key={headerGroup.id}>
@@ -76,6 +76,10 @@ const DataTable = () => {
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
                   isNumeric={meta?.isNumeric}
+                  p="6"
+                  color="black"
+                  fontWeight="semibold"
+                  fontSize="sm"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -99,7 +103,12 @@ const DataTable = () => {
       </Thead>
       <Tbody>
         {table.getRowModel().rows.map((row) => (
-          <Tr key={row.id}>
+          <Tr
+            key={row.id}
+            _hover={{
+              backgroundColor: "gray.100",
+            }}
+          >
             {row.getVisibleCells().map((cell) => {
               // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
               const meta = cell.column.columnDef.meta;
