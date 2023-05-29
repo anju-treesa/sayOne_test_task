@@ -32,38 +32,67 @@ import DataTable from "@/components/Table";
 
 function EventListingPage() {
   const [categories, setCategories] = useState([]);
+  const [formData, setFormData] = useState({
+    title: "",
+    categoryId: "",
+    date: new Date(),
+    eventPrice: "",
+    notes: "",
+  });
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-  const [eventName, setEventName] = useState("");
-  const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
 
   useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        title: "",
+        categoryId: "",
+        date: new Date(),
+        eventPrice: "",
+        notes: "",
+      });
+      return;
+    }
+
     (async () => {
       try {
-        const q = query(collection(db, "categories"));
-        // , where("capital", "==", true)
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(collection(db, "categories"));
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push({
+            id: doc.id,
+            ...doc.data(),
+            createdat: doc.data().createdat?.toDate(),
+          });
+        });
 
-        const data = querySnapshot.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        console.log("data", data);
-      } catch (error) {}
+        setCategories(data);
+      } catch (error) {
+        console.log("error", error);
+      }
     })();
-  }, []);
+  }, [isOpen]);
 
-  const onEventSaveHandler = async (event) => {
-    console.log(event, "event");
-    await setDoc(doc(db, "events"), {
-      eventName: eventName,
-      title: title,
-      price: price,
+  const onFormChangeHandler = (field) => (e) => {
+    setFormData({
+      ...formData,
+      [field]: e.target.value,
     });
   };
+
+  const onEventSaveHandler = async () => {
+    console.log("formData", formData);
+
+    // await setDoc(doc(db, "events"), {
+    //   eventName: eventName,
+    //   title: title,
+    //   price: price,
+    // });
+  };
+
   return (
     <Container maxW="container.xl">
       <Box
@@ -98,31 +127,38 @@ function EventListingPage() {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create Events</ModalHeader>
+          <ModalHeader>Create Event</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <FormControl>
-              <FormLabel>Event Name</FormLabel>
-              <CustomInput
-                type="text"
-                name="eventName"
-                value={eventName}
-                onChange={(event) => setEventName(event.target.value)}
-                id="eventName"
-                placeholder="Event Name"
-              />
-            </FormControl>
-
             <FormControl mt={4}>
               <FormLabel>Title</FormLabel>
               <CustomInput
+                autoFocus
                 type="text"
                 name="title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
+                value={formData.title}
+                onChange={onFormChangeHandler("title")}
                 id="title"
                 placeholder="Event Title"
               />
+            </FormControl>
+            <FormControl mt={4}>
+              <FormLabel>Select Category</FormLabel>
+              <Select
+                placeholder="Select Category"
+                onChange={onFormChangeHandler("categoryId")}
+                value={formData.categoryId}
+              >
+                {categories.map(({ name, id }) => (
+                  <option
+                    style={{ textTransform: "capitalize" }}
+                    key={id}
+                    value={id}
+                  >
+                    {name}
+                  </option>
+                ))}
+              </Select>
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>Date</FormLabel>
@@ -131,22 +167,12 @@ function EventListingPage() {
             <FormControl mt={4}>
               <FormLabel>Price</FormLabel>
               <CustomInput
-                type="text"
+                type="number"
                 name="price"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
                 id="price"
                 placeholder="Event Price"
-              />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Select Category</FormLabel>
-              <Select
-                bg="red"
-                borderColor="black"
-                color="white"
-                placeholder="Select Category"
               />
             </FormControl>
           </ModalBody>
