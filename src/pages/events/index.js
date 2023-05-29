@@ -206,7 +206,14 @@ function EventListingPage() {
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>Date</FormLabel>
-              <Input placeholder="Date" />
+              <CustomInput
+                type="date"
+                name="price"
+                value={formData.price}
+                onChange={onFormChangeHandler("price")}
+                id="price"
+                placeholder="Event Price"
+              />
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>Price</FormLabel>
