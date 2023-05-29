@@ -13,21 +13,13 @@ import {
   ModalOverlay,
   Container,
   Box,
+  Select,
 } from "@chakra-ui/react";
+import { collection, getDocs, setDoc, doc } from "firebase/firestore";
 
 import Button from "@/components/button/Button";
-import { Select } from "@chakra-ui/react";
 import { db } from "@/libs/firebase";
 import CustomInput from "@/components/input/Input";
-
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  setDoc,
-  doc,
-} from "firebase/firestore";
 import DataTable from "@/components/Table";
 
 function EventListingPage() {
@@ -36,9 +28,10 @@ function EventListingPage() {
     title: "",
     categoryId: "",
     date: new Date(),
-    eventPrice: "",
+    price: "",
     notes: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef(null);
@@ -51,7 +44,7 @@ function EventListingPage() {
         title: "",
         categoryId: "",
         date: new Date(),
-        eventPrice: "",
+        price: "",
         notes: "",
       });
       return;
@@ -85,6 +78,7 @@ function EventListingPage() {
 
   const onEventSaveHandler = async () => {
     console.log("formData", formData);
+    setLoading(true);
 
     // await setDoc(doc(db, "events"), {
     //   eventName: eventName,
@@ -171,19 +165,33 @@ function EventListingPage() {
                 type="number"
                 name="price"
                 value={price}
-                onChange={(event) => setPrice(event.target.value)}
+                onChange={onFormChangeHandler("price")}
                 id="price"
                 placeholder="Event Price"
+              />
+            </FormControl>
+            <FormControl mt={4}>
+              <FormLabel>Notes</FormLabel>
+              <CustomInput
+                type="text"
+                name="Notes"
+                value={formData.notes}
+                onChange={onFormChangeHandler("notes")}
+                id="Notes"
+                placeholder="Notes"
               />
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
             <Button
+              rounded="lg"
               colorScheme="blue"
               mr={3}
               title="Save"
               onClick={onEventSaveHandler}
+              isLoading={loading}
+              loadingText="Saving..."
             />
             <Button rounded="lg" onClick={onClose} title="Cancel" />
           </ModalFooter>

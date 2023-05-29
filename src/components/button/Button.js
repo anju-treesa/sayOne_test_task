@@ -6,12 +6,13 @@ export default function ButtonComponent({
   onSubmit,
   isLoading,
   title,
+  loadingText = "Submitting",
   ...props
 }) {
   return (
     <Button
       isLoading={isLoading}
-      loadingText="Submitting"
+      loadingText={loadingText}
       colorScheme="teal"
       borderRadius={0}
       variant="solid"
