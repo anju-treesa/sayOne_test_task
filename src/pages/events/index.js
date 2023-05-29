@@ -18,11 +18,13 @@ import {
 } from "@chakra-ui/react";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import * as Yup from "yup";
+import format from "date-fns/format";
 
 import Button from "@/components/button/Button";
 import { db } from "@/libs/firebase";
 import CustomInput from "@/components/input/Input";
 import DataTable from "@/components/Table";
+import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 
 function EventListingPage() {
   const [categories, setCategories] = useState([]);
@@ -39,6 +41,7 @@ function EventListingPage() {
   const initialRef = React.useRef(null);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { authUser } = useFirebaseAuth();
 
   useEffect(() => {
     if (!isOpen) {
@@ -72,6 +75,14 @@ function EventListingPage() {
   }, [isOpen]);
 
   const onFormChangeHandler = (field) => (e) => {
+    if (field === "date") {
+      setFormData({
+        ...formData,
+        [field]: new Date(e.target.value),
+      });
+      return;
+    }
+
     setFormData({
       ...formData,
       [field]: e.target.value,
@@ -79,7 +90,6 @@ function EventListingPage() {
   };
 
   const onEventSaveHandler = async () => {
-    console.log("formData", formData);
     setLoading(true);
 
     const schema = Yup.object().shape({
@@ -105,9 +115,10 @@ function EventListingPage() {
       await addDoc(collection(db, "events"), {
         title: formData.title,
         categoryId: formData.categoryId,
-        price: formData.price,
+        price: Number(formData.price),
         date: formData.date,
         notes: formData.notes,
+        userId: authUser.uid,
       });
 
       setLoading(false);
@@ -119,6 +130,7 @@ function EventListingPage() {
         isClosable: true,
         position: "top-right",
       });
+      onClose();
     } catch (error) {
       setLoading(false);
 
@@ -132,8 +144,6 @@ function EventListingPage() {
         position: "top-right",
       });
     }
-
-    onClose();
   };
 
   return (
@@ -208,11 +218,11 @@ function EventListingPage() {
               <FormLabel>Date</FormLabel>
               <CustomInput
                 type="date"
-                name="price"
-                value={formData.price}
-                onChange={onFormChangeHandler("price")}
-                id="price"
-                placeholder="Event Price"
+                name="date"
+                value={format(formData.date, "yyyy-MM-dd")}
+                onChange={onFormChangeHandler("date")}
+                id="date"
+                min={new Date().toISOString().split("T")[0]}
               />
             </FormControl>
             <FormControl mt={4}>
