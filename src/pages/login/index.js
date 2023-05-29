@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
-import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 import { useToast } from "@chakra-ui/react";
 import * as Yup from "yup";
 import {
@@ -21,7 +20,6 @@ import { auth, signInWithEmailAndPassword } from "@/libs/firebase";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [passwordOne, setPasswordOne] = useState("");
-  const router = useRouter();
   const toast = useToast();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);

@@ -14,8 +14,10 @@ import {
   Container,
   Box,
   Select,
+  useToast,
 } from "@chakra-ui/react";
-import { collection, getDocs, setDoc, doc } from "firebase/firestore";
+import { collection, getDocs, addDoc } from "firebase/firestore";
+import * as Yup from "yup";
 
 import Button from "@/components/button/Button";
 import { db } from "@/libs/firebase";
@@ -33,10 +35,10 @@ function EventListingPage() {
   });
   const [loading, setLoading] = useState(false);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-  const [price, setPrice] = useState("");
+  const initialRef = React.useRef(null);
+  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     if (!isOpen) {
@@ -80,11 +82,58 @@ function EventListingPage() {
     console.log("formData", formData);
     setLoading(true);
 
-    // await setDoc(doc(db, "events"), {
-    //   eventName: eventName,
-    //   title: title,
-    //   price: price,
-    // });
+    const schema = Yup.object().shape({
+      title: Yup.string().required("Event title is required!"),
+      categoryId: Yup.string().required("Category is required!"),
+      price: Yup.number("Price should be a number").required(
+        "Price is required!"
+      ),
+    });
+
+    try {
+      await schema.validate(
+        {
+          title: formData.title,
+          categoryId: formData.categoryId,
+          price: formData.price,
+        },
+        {
+          abortEarly: false,
+        }
+      );
+
+      await addDoc(collection(db, "events"), {
+        title: formData.title,
+        categoryId: formData.categoryId,
+        price: formData.price,
+        date: formData.date,
+        notes: formData.notes,
+      });
+
+      setLoading(false);
+
+      toast({
+        description: "Event created successfully!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } catch (error) {
+      setLoading(false);
+
+      toast({
+        description: Array.isArray(error?.inner)
+          ? error?.inner[0]?.message
+          : error?.message || "An error occured while saving event.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+
+    onClose();
   };
 
   return (
@@ -164,7 +213,7 @@ function EventListingPage() {
               <CustomInput
                 type="number"
                 name="price"
-                value={price}
+                value={formData.price}
                 onChange={onFormChangeHandler("price")}
                 id="price"
                 placeholder="Event Price"
