@@ -6,18 +6,11 @@ import { signOut, auth } from "@/libs/firebase";
 
 const Header = () => {
   const router = useRouter();
-  const [showHeader, setShowheader] = useState(false);
   const { authUser, loading } = useFirebaseAuth();
 
   const registerPageClickHandler = () => {
     router.push("/signup");
   };
-
-  useEffect(() => {
-    if (!loading && !authUser) {
-      setShowheader(false);
-    }
-  }, [authUser, loading]);
 
   const loginPageClickHandler = () => {
     router.push("/login");
@@ -41,7 +34,7 @@ const Header = () => {
             Re-Events
           </Box>
 
-          {!authUser ? (
+          {!authUser && !loading ? (
             <Box>
               <Button
                 mr="4"

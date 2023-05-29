@@ -28,14 +28,16 @@ import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 
 function EventListingPage() {
   const [categories, setCategories] = useState([]);
+  const [events, setEvents] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
-    categoryId: "",
+    category: "",
     date: new Date(),
     price: "",
     notes: "",
   });
   const [loading, setLoading] = useState(false);
+  const [reload, setReload] = useState(false);
 
   const finalRef = React.useRef(null);
   const initialRef = React.useRef(null);
@@ -44,10 +46,32 @@ function EventListingPage() {
   const { authUser } = useFirebaseAuth();
 
   useEffect(() => {
+    (async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "events"));
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push({
+            id: doc.id,
+            ...doc.data(),
+            date: format(doc.data().date?.toDate(), "dd-MM-yyyy"),
+          });
+        });
+
+        setEvents(data);
+      } catch (error) {
+        console.log("error", error);
+      }
+    })();
+  }, [reload]);
+
+  console.log("events", events);
+
+  useEffect(() => {
     if (!isOpen) {
       setFormData({
         title: "",
-        categoryId: "",
+        category: "",
         date: new Date(),
         price: "",
         notes: "",
@@ -94,7 +118,7 @@ function EventListingPage() {
 
     const schema = Yup.object().shape({
       title: Yup.string().required("Event title is required!"),
-      categoryId: Yup.string().required("Category is required!"),
+      category: Yup.string().required("Category is required!"),
       price: Yup.number("Price should be a number").required(
         "Price is required!"
       ),
@@ -104,7 +128,7 @@ function EventListingPage() {
       await schema.validate(
         {
           title: formData.title,
-          categoryId: formData.categoryId,
+          category: formData.category,
           price: formData.price,
         },
         {
@@ -114,7 +138,7 @@ function EventListingPage() {
 
       await addDoc(collection(db, "events"), {
         title: formData.title,
-        categoryId: formData.categoryId,
+        category: formData.category,
         price: Number(formData.price),
         date: formData.date,
         notes: formData.notes,
@@ -130,6 +154,7 @@ function EventListingPage() {
         isClosable: true,
         position: "top-right",
       });
+      setReload(true);
       onClose();
     } catch (error) {
       setLoading(false);
@@ -168,7 +193,7 @@ function EventListingPage() {
         />
       </Box>
       <Box mt="10" bg="white">
-        <DataTable />
+        <DataTable data={events} />
       </Box>
 
       <Modal
@@ -199,15 +224,15 @@ function EventListingPage() {
               <FormLabel>Select Category</FormLabel>
               <Select
                 placeholder="Select Category"
-                onChange={onFormChangeHandler("categoryId")}
-                value={formData.categoryId}
+                onChange={onFormChangeHandler("category")}
+                value={formData.category}
                 style={{ textTransform: "capitalize" }}
               >
                 {categories.map(({ name, id }) => (
                   <option
                     style={{ textTransform: "capitalize" }}
                     key={id}
-                    value={id}
+                    value={name}
                   >
                     {name}
                   </option>

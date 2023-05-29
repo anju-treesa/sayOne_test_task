@@ -11,45 +11,31 @@ import {
 import { Table, Thead, Tbody, Tr, Th, Td, chakra } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
-const data = [
-  {
-    fromUnit: "inches",
-    toUnit: "millimetres (mm)",
-    factor: 25.4,
-  },
-  {
-    fromUnit: "feet",
-    toUnit: "centimetres (cm)",
-    factor: 30.48,
-  },
-  {
-    fromUnit: "yards",
-    toUnit: "metres (m)",
-    factor: 0.91444,
-  },
-];
-
 const columnHelper = createColumnHelper();
 
 const columns = [
-  columnHelper.accessor("fromUnit", {
+  columnHelper.accessor("title", {
     cell: (info) => info.getValue(),
-    header: "To convert",
+    header: "Event Title",
   }),
-  columnHelper.accessor("toUnit", {
+  columnHelper.accessor("category", {
     cell: (info) => info.getValue(),
-    header: "Into",
+    header: "Category",
   }),
-  columnHelper.accessor("factor", {
+  columnHelper.accessor("date", {
     cell: (info) => info.getValue(),
-    header: "Multiply by",
+    header: "Date",
+  }),
+  columnHelper.accessor("price", {
+    cell: (info) => info.getValue(),
+    header: "Price",
     meta: {
       isNumeric: true,
     },
   }),
 ];
 
-const DataTable = () => {
+const DataTable = ({ data }) => {
   const [sorting, setSorting] = React.useState([]);
 
   const table = useReactTable({
@@ -80,6 +66,7 @@ const DataTable = () => {
                   color="black"
                   fontWeight="semibold"
                   fontSize="sm"
+                  textAlign="center"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -105,6 +92,7 @@ const DataTable = () => {
         {table.getRowModel().rows.map((row) => (
           <Tr
             key={row.id}
+            // textAlign="center"
             _hover={{
               backgroundColor: "gray.100",
             }}
@@ -113,7 +101,11 @@ const DataTable = () => {
               // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
               const meta = cell.column.columnDef.meta;
               return (
-                <Td key={cell.id} isNumeric={meta?.isNumeric}>
+                <Td
+                  textAlign="center"
+                  key={cell.id}
+                  isNumeric={meta?.isNumeric}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Td>
               );
