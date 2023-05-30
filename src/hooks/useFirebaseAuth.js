@@ -13,7 +13,6 @@ export default function useFirebaseAuth() {
   const { push } = useRouter();
 
   const authStateChanged = async (authState) => {
-    console.log("came-here!!!!", authState);
     if (!authState) {
       setAuthUser(null);
       setLoading(false);

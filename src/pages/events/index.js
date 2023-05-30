@@ -8,7 +8,6 @@ import {
   ModalHeader,
   ModalCloseButton,
   FormLabel,
-  Input,
   ModalFooter,
   ModalOverlay,
   Container,
@@ -37,6 +36,7 @@ function EventListingPage() {
     notes: "",
   });
   const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
   const [reload, setReload] = useState(false);
 
   const finalRef = React.useRef(null);
@@ -48,24 +48,25 @@ function EventListingPage() {
   useEffect(() => {
     (async () => {
       try {
+        setTableLoading(true);
         const querySnapshot = await getDocs(collection(db, "events"));
         const data = [];
         querySnapshot.forEach((doc) => {
           data.push({
             id: doc.id,
             ...doc.data(),
-            date: format(doc.data().date?.toDate(), "dd-MM-yyyy"),
+            date: format(doc.data().date?.toDate(), "dd-MMM-yyyy"),
           });
         });
 
         setEvents(data);
+        setTableLoading(false);
       } catch (error) {
+        setTableLoading(false);
         console.log("error", error);
       }
     })();
   }, [reload]);
-
-  console.log("events", events);
 
   useEffect(() => {
     if (!isOpen) {
@@ -193,7 +194,7 @@ function EventListingPage() {
         />
       </Box>
       <Box mt="10" bg="white">
-        <DataTable data={events} />
+        <DataTable data={events} tableLoading={tableLoading} />
       </Box>
 
       <Modal

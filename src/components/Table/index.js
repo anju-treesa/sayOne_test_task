@@ -8,18 +8,29 @@ import {
   getSortedRowModel,
   createColumnHelper,
 } from "@tanstack/react-table";
-import { Table, Thead, Tbody, Tr, Th, Td, chakra } from "@chakra-ui/react";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  chakra,
+  Stack,
+  Skeleton,
+} from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { capitalize } from "lodash";
 
 const columnHelper = createColumnHelper();
 
 const columns = [
   columnHelper.accessor("title", {
-    cell: (info) => info.getValue(),
+    cell: (info) => capitalize(info.getValue()),
     header: "Event Title",
   }),
   columnHelper.accessor("category", {
-    cell: (info) => info.getValue(),
+    cell: (info) => capitalize(info.getValue()),
     header: "Category",
   }),
   columnHelper.accessor("date", {
@@ -27,7 +38,14 @@ const columns = [
     header: "Date",
   }),
   columnHelper.accessor("price", {
-    cell: (info) => info.getValue(),
+    cell: (info) => {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      return formatter.format(info.getValue());
+    },
     header: "Price",
     meta: {
       isNumeric: true,
@@ -35,7 +53,40 @@ const columns = [
   }),
 ];
 
-const DataTable = ({ data }) => {
+const TableLoading = () => (
+  <Tr p="10">
+    <Td>
+      <Stack>
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+      </Stack>
+    </Td>
+    <Td>
+      <Stack>
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+      </Stack>
+    </Td>
+    <Td>
+      <Stack>
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+      </Stack>
+    </Td>
+    <Td>
+      <Stack>
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+      </Stack>
+    </Td>
+  </Tr>
+);
+
+const DataTable = ({ data = [], tableLoading = false }) => {
   const [sorting, setSorting] = React.useState([]);
 
   const table = useReactTable({
@@ -55,7 +106,6 @@ const DataTable = ({ data }) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <Tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => {
-              // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
               const meta = header.column.columnDef.meta;
               return (
                 <Th
@@ -67,6 +117,8 @@ const DataTable = ({ data }) => {
                   fontWeight="semibold"
                   fontSize="sm"
                   textAlign="center"
+                  borderBottom="1px"
+                  borderColor="gray.400"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -89,29 +141,31 @@ const DataTable = ({ data }) => {
         ))}
       </Thead>
       <Tbody>
-        {table.getRowModel().rows.map((row) => (
-          <Tr
-            key={row.id}
-            // textAlign="center"
-            _hover={{
-              backgroundColor: "gray.100",
-            }}
-          >
-            {row.getVisibleCells().map((cell) => {
-              // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
-              const meta = cell.column.columnDef.meta;
-              return (
-                <Td
-                  textAlign="center"
-                  key={cell.id}
-                  isNumeric={meta?.isNumeric}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </Td>
-              );
-            })}
-          </Tr>
-        ))}
+        {tableLoading ? (
+          <TableLoading />
+        ) : (
+          table.getRowModel().rows.map((row) => (
+            <Tr
+              key={row.id}
+              _hover={{
+                backgroundColor: "gray.100",
+              }}
+            >
+              {row.getVisibleCells().map((cell) => {
+                const meta = cell.column.columnDef.meta;
+                return (
+                  <Td
+                    textAlign="center"
+                    key={cell.id}
+                    isNumeric={meta?.isNumeric}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Td>
+                );
+              })}
+            </Tr>
+          ))
+        )}
       </Tbody>
     </Table>
   );
