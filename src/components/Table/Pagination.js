@@ -10,13 +10,15 @@ import {
 const Pagination = ({ table }) => {
   return (
     <HStack
-      py="2"
+      py="3"
       backgroundColor="white"
       justifyContent="center"
       alignItems="center"
       w="full"
       spacing="4"
       shadow="md"
+      borderTop="1px"
+      borderColor="gray.200"
     >
       <Button
         colorScheme="gray"

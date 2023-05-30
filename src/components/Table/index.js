@@ -124,7 +124,7 @@ const DataTable = ({ data = [], tableLoading = false }) => {
                     fontSize="sm"
                     textAlign="center"
                     borderBottom="1px"
-                    borderColor="gray.400"
+                    borderColor="gray.200"
                   >
                     {flexRender(
                       header.column.columnDef.header,
