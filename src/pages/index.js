@@ -13,6 +13,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/libs/firebase";
 import CategoryGrid from "@/components/CategoryGrid";
 import EventCard from "@/components/EventCard";
+import EventGrid from "@/components/EventGrid";
 
 function HomePage() {
   const [categories, setCategories] = useState([]);
@@ -107,8 +108,8 @@ function HomePage() {
         <CategoryGrid data={categories} />
       </Box>
 
-      <Box mt="10" p="12">
-        <EventCard />
+      <Box p="12">
+        <EventGrid />
       </Box>
     </>
   );
