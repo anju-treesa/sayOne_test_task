@@ -39,6 +39,8 @@ import CustomInput from "@/components/input/Input";
 import DataTable from "@/components/Table";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 import DeleteModal from "@/components/deleteModal";
+import DatePicker from "@/components/DatePicker";
+import isAfter from "date-fns/isAfter";
 
 const columnHelper = createColumnHelper();
 
@@ -48,7 +50,8 @@ function EventListingPage() {
   const [formData, setFormData] = useState({
     title: "",
     category: "",
-    date: new Date(),
+    startDate: new Date(),
+    endDate: new Date(),
     price: "",
     notes: "",
   });
@@ -86,7 +89,14 @@ function EventListingPage() {
           data.push({
             id: doc.id,
             ...doc.data(),
-            date: format(doc.data()?.date?.toDate(), "dd-MMM-yyyy"),
+            startDate: format(
+              doc.data()?.startDate?.toDate(),
+              "dd-MMM-yyyy hh:mm aa"
+            ),
+            endDate: format(
+              doc.data()?.endDate?.toDate(),
+              "dd-MMM-yyyy  hh:mm aa"
+            ),
           });
         });
 
@@ -104,7 +114,8 @@ function EventListingPage() {
       setFormData({
         title: "",
         category: "",
-        date: new Date(),
+        startDate: new Date(),
+        endDate: new Date(),
         price: "",
         notes: "",
       });
@@ -134,17 +145,16 @@ function EventListingPage() {
   }, [isOpen, isDeleteOpen]);
 
   const onFormChangeHandler = (field) => (e) => {
-    if (field === "date") {
-      setFormData({
-        ...formData,
-        [field]: e.target.value,
-      });
-      return;
-    }
-
     setFormData({
       ...formData,
       [field]: e.target.value,
+    });
+  };
+
+  const onFormDateChangeHandler = (field) => (date) => {
+    setFormData({
+      ...formData,
+      [field]: date,
     });
   };
 
@@ -171,12 +181,17 @@ function EventListingPage() {
         }
       );
 
+      if (!isAfter(formData.startDate, formData.endDate)) {
+        throw new Error("Start date cannot be past end date!");
+      }
+
       if (!isEdit) {
         await addDoc(collection(db, "events"), {
           title: formData.title,
           category: formData.category,
           price: Number(formData.price),
-          date: new Date(formData.date),
+          startDate: formData.startDate,
+          endDate: formData.endDate,
           notes: formData.notes,
           userId: authUser.uid,
         });
@@ -185,7 +200,8 @@ function EventListingPage() {
           title: formData.title,
           category: formData.category,
           price: Number(formData.price),
-          date: new Date(formData.date),
+          startDate: formData.startDate,
+          endDate: formData.endDate,
           notes: formData.notes,
           userId: authUser.uid,
         });
@@ -228,9 +244,13 @@ function EventListingPage() {
       cell: (info) => info.getValue() && capitalize(info.getValue()),
       header: "Category",
     }),
-    columnHelper.accessor("date", {
+    columnHelper.accessor("startDate", {
       cell: (info) => info.getValue(),
-      header: "Date",
+      header: "Start Date",
+    }),
+    columnHelper.accessor("endDate", {
+      cell: (info) => info.getValue(),
+      header: "End Date",
     }),
     columnHelper.accessor("price", {
       cell: (info) => {
@@ -389,17 +409,17 @@ function EventListingPage() {
                 </Select>
               </FormControl>
               <FormControl mt={4}>
-                <FormLabel>Date</FormLabel>
-                <CustomInput
-                  type="date"
-                  name="date"
-                  value={
-                    formData?.date &&
-                    format(new Date(formData?.date), "yyyy-MM-dd")
-                  }
-                  onChange={onFormChangeHandler("date")}
-                  id="date"
-                  min={new Date().toISOString().split("T")[0]}
+                <FormLabel>Start Date</FormLabel>
+                <DatePicker
+                  selectedDate={formData.startDate}
+                  onChange={onFormDateChangeHandler("startDate")}
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>End Date</FormLabel>
+                <DatePicker
+                  selectedDate={formData.endDate}
+                  onChange={onFormDateChangeHandler("endDate")}
                 />
               </FormControl>
               <FormControl mt={4}>
