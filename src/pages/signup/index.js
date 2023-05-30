@@ -17,6 +17,7 @@ import {
 import { auth, createUserWithEmailAndPassword } from "@/libs/firebase";
 import ButtonComponenet from "@/components/button/Button";
 import CustomInput from "@/components/input/Input";
+import Head from "next/head";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -90,89 +91,95 @@ const SignUp = () => {
   };
 
   return (
-    <Flex
-      h="100%"
-      w="100%"
-      flexDirection="column"
-      backgroundColor="gray.200"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Stack
-        flexDir="column"
-        mb="2"
+    <>
+      <Head>
+        <title>Register - Re-Events | Favourite events near you!</title>
+      </Head>
+
+      <Flex
+        h="100%"
+        w="100%"
+        flexDirection="column"
+        backgroundColor="gray.200"
         justifyContent="center"
         alignItems="center"
       >
-        <Avatar bg="teal.500" />
-        <Heading color="teal.400">Welcome</Heading>
-        <Box minW={{ base: "90%", md: "468px" }}>
-          <Stack
-            spacing={4}
-            p="1rem"
-            backgroundColor="whiteAlpha.900"
-            boxShadow="md"
-          >
-            <FormControl>
-              <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                  // children={<CFaUserAlt color="gray.300" />}
-                />
-                <CustomInput
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  name="email"
-                  id="email"
-                  placeholder="Email"
-                />
-              </InputGroup>
-            </FormControl>
-            <FormControl>
-              <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                  color="gray.300"
-                  // children={<CFaLock color="gray.300" />}
-                />
-                <CustomInput
-                  type="password"
-                  name="passwordOne"
-                  value={passwordOne}
-                  onChange={(event) => setPasswordOne(event.target.value)}
-                  id="passwordOne"
-                  placeholder="Password"
-                />
-              </InputGroup>
-            </FormControl>
-            <FormControl>
-              <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                  color="gray.300"
-                  // children={<CFaLock color="gray.300" />}
-                />
-                <CustomInput
-                  type="password"
-                  name="passwordTwo"
-                  value={passwordTwo}
-                  onChange={(event) => setPasswordTwo(event.target.value)}
-                  id="passwordTwo"
-                  placeholder="Confirm Password"
-                />
-              </InputGroup>
-            </FormControl>
+        <Stack
+          flexDir="column"
+          mb="2"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Avatar bg="teal.500" />
+          <Heading color="teal.400">Welcome</Heading>
+          <Box minW={{ base: "90%", md: "468px" }}>
+            <Stack
+              spacing={4}
+              p="1rem"
+              backgroundColor="whiteAlpha.900"
+              boxShadow="md"
+            >
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    // children={<CFaUserAlt color="gray.300" />}
+                  />
+                  <CustomInput
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    name="email"
+                    id="email"
+                    placeholder="Email"
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    color="gray.300"
+                    // children={<CFaLock color="gray.300" />}
+                  />
+                  <CustomInput
+                    type="password"
+                    name="passwordOne"
+                    value={passwordOne}
+                    onChange={(event) => setPasswordOne(event.target.value)}
+                    id="passwordOne"
+                    placeholder="Password"
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    color="gray.300"
+                    // children={<CFaLock color="gray.300" />}
+                  />
+                  <CustomInput
+                    type="password"
+                    name="passwordTwo"
+                    value={passwordTwo}
+                    onChange={(event) => setPasswordTwo(event.target.value)}
+                    id="passwordTwo"
+                    placeholder="Confirm Password"
+                  />
+                </InputGroup>
+              </FormControl>
 
-            <ButtonComponenet
-              onSubmit={onSubmit}
-              isLoading={isLoading}
-              title="Sigin Up"
-            />
-          </Stack>
-        </Box>
-      </Stack>
-    </Flex>
+              <ButtonComponenet
+                onSubmit={onSubmit}
+                isLoading={isLoading}
+                title="Sigin Up"
+              />
+            </Stack>
+          </Box>
+        </Stack>
+      </Flex>
+    </>
   );
 };
 

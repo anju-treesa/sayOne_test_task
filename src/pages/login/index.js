@@ -16,6 +16,7 @@ import {
 import ButtonComponenet from "@/components/button/Button";
 import CustomInput from "@/components/input/Input";
 import { auth, signInWithEmailAndPassword } from "@/libs/firebase";
+import Head from "next/head";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -71,72 +72,77 @@ const LoginPage = () => {
   };
 
   return (
-    <Flex
-      flexDirection="column"
-      h="100%"
-      w="100%"
-      backgroundColor="gray.200"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Stack
-        flexDir="column"
-        mb="2"
+    <>
+      <Head>
+        <title>Login - Re-Events | Favourite events near you!</title>
+      </Head>
+      <Flex
+        flexDirection="column"
+        h="100%"
+        w="100%"
+        backgroundColor="gray.200"
         justifyContent="center"
         alignItems="center"
       >
-        <Avatar bg="teal.500" />
-        <Heading color="teal.400">Welcome</Heading>
-        <Box minW={{ base: "90%", md: "468px" }}>
-          <Stack
-            spacing={4}
-            p="1rem"
-            backgroundColor="whiteAlpha.900"
-            boxShadow="md"
-          >
-            <FormControl>
-              <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                  // children={<CFaUserAlt color="gray.300" />}
-                />
-                <CustomInput
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  name="email"
-                  id="email"
-                  placeholder="Email"
-                />
-              </InputGroup>
-            </FormControl>
-            <FormControl>
-              <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                  color="gray.300"
-                  // children={<CFaLock color="gray.300" />}
-                />
-                <CustomInput
-                  type="password"
-                  name="passwordOne"
-                  value={passwordOne}
-                  onChange={(event) => setPasswordOne(event.target.value)}
-                  id="passwordOne"
-                  placeholder="Password"
-                />
-              </InputGroup>
-            </FormControl>
+        <Stack
+          flexDir="column"
+          mb="2"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Avatar bg="teal.500" />
+          <Heading color="teal.400">Welcome</Heading>
+          <Box minW={{ base: "90%", md: "468px" }}>
+            <Stack
+              spacing={4}
+              p="1rem"
+              backgroundColor="whiteAlpha.900"
+              boxShadow="md"
+            >
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    // children={<CFaUserAlt color="gray.300" />}
+                  />
+                  <CustomInput
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    name="email"
+                    id="email"
+                    placeholder="Email"
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    color="gray.300"
+                    // children={<CFaLock color="gray.300" />}
+                  />
+                  <CustomInput
+                    type="password"
+                    name="passwordOne"
+                    value={passwordOne}
+                    onChange={(event) => setPasswordOne(event.target.value)}
+                    id="passwordOne"
+                    placeholder="Password"
+                  />
+                </InputGroup>
+              </FormControl>
 
-            <ButtonComponenet
-              onSubmit={onSubmit}
-              isLoading={isLoading}
-              title="Login"
-            />
-          </Stack>
-        </Box>
-      </Stack>
-    </Flex>
+              <ButtonComponenet
+                onSubmit={onSubmit}
+                isLoading={isLoading}
+                title="Login"
+              />
+            </Stack>
+          </Box>
+        </Stack>
+      </Flex>
+    </>
   );
 };
 
