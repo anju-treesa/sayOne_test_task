@@ -97,8 +97,9 @@ const SignUp = () => {
       </Head>
 
       <Flex
-        h="100%"
-        w="100%"
+        mt="-10"
+        h="calc(100vh - 4rem)"
+        w="100vw"
         flexDirection="column"
         backgroundColor="gray.200"
         justifyContent="center"
