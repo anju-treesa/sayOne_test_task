@@ -2,12 +2,14 @@ import React from "react";
 import { Grid, GridItem } from "@chakra-ui/react";
 import EventCard from "../EventCard";
 
-const EventGrid = () => {
+const EventGrid = ({ events = [] }) => {
   return (
     <Grid templateColumns="repeat(3, 1fr)" gap={6}>
-      <GridItem>
-        <EventCard />
-      </GridItem>
+      {events.map(({ id, ...restProps }) => (
+        <GridItem key={id}>
+          <EventCard {...restProps} />
+        </GridItem>
+      ))}
     </Grid>
   );
 };

@@ -12,15 +12,17 @@ import {
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/libs/firebase";
 import CategoryGrid from "@/components/CategoryGrid";
-import EventCard from "@/components/EventCard";
 import EventGrid from "@/components/EventGrid";
+import format from "date-fns/format";
 
 function HomePage() {
   const [categories, setCategories] = useState([]);
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     (async () => {
       await fetchCategories();
+      await fetchEvents();
     })();
   }, []);
 
@@ -37,6 +39,25 @@ function HomePage() {
       });
 
       setCategories(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchEvents = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "events"));
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+          startDate: doc.data()?.startDate?.toDate(),
+          endDate: doc.data()?.endDate?.toDate(),
+        });
+      });
+
+      setEvents(data);
     } catch (error) {
       console.error(error);
     }
@@ -109,7 +130,7 @@ function HomePage() {
       </Box>
 
       <Box p="12">
-        <EventGrid />
+        <EventGrid events={events} />
       </Box>
     </>
   );

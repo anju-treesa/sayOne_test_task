@@ -1,29 +1,28 @@
 import {
   Badge,
-  Button,
-  ButtonGroup,
   Card,
   CardBody,
-  CardFooter,
-  Divider,
   Heading,
   HStack,
-  Image,
   Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { format } from "date-fns";
+import isSameDay from "date-fns/isSameDay";
 import React from "react";
 
-const EventCard = () => {
+const EventCard = ({ title, startDate, endDate, category, price }) => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+
+  const formattedPrice = formatter.format(price);
+
   return (
     <Card maxW="sm">
       <CardBody p="10">
-        {/* <Image
-          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-          alt="Green double couch with wooden legs"
-          borderRadius="lg"
-        /> */}
         <HStack spacing="6" alignItems="center">
           <VStack>
             <Text
@@ -32,29 +31,33 @@ const EventCard = () => {
               color="red.500"
               fontSize="lg"
             >
-              MAY
+              {format(startDate, "LLL")}
             </Text>
             <Text fontWeight="semibold" color="gray.800" fontSize="lg">
-              05
+              {isSameDay(startDate, endDate)
+                ? format(startDate, "dd")
+                : `${format(startDate, "dd")} - ${format(endDate, "dd")}`}
             </Text>
           </VStack>
           <Stack mt="6" spacing="3" justifyContent="center">
             <HStack>
-              <Heading size="md">Event Name</Heading>
+              <Heading size="md">{title}</Heading>
               <Badge ml="1" px="2" py="1" colorScheme="green" rounded="md">
-                Movies
+                {category}
               </Badge>
             </HStack>
             <Text color="blue.600" fontSize="lg">
-              $14.99
+              {formattedPrice}
             </Text>
             <Text color="gray.500" fontSize="sm">
-              Sun Jun 04 2023 at 11:00 am
+              {`${format(startDate, "EEE LLL dd yyyy")} at ${format(
+                startDate,
+                "hh:mm aa"
+              )}`}
             </Text>
           </Stack>
         </HStack>
       </CardBody>
-      {/* <Divider /> */}
     </Card>
   );
 };
