@@ -24,6 +24,7 @@ import { db } from "@/libs/firebase";
 import CustomInput from "@/components/input/Input";
 import DataTable from "@/components/Table";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
+import Head from "next/head";
 
 function EventListingPage() {
   const [categories, setCategories] = useState([]);
@@ -173,123 +174,128 @@ function EventListingPage() {
   };
 
   return (
-    <Container maxW="container.xl">
-      <Box
-        as="h2"
-        fontSize="2xl"
-        fontWeight="black"
-        letterSpacing="wider"
-        textTransform="uppercase"
-      >
-        Events
-      </Box>
+    <>
+      <Head>
+        <title>Events - Re-Events | Favourite events near you!</title>
+      </Head>
+      <Container maxW="container.xl">
+        <Box
+          as="h2"
+          fontSize="2xl"
+          fontWeight="black"
+          letterSpacing="wider"
+          textTransform="uppercase"
+        >
+          Events
+        </Box>
 
-      <Box w="full" display="flex" justifyContent="flex-end">
-        <Button
-          h="12"
-          rounded="lg"
-          display="block"
-          title="Add Events"
-          onSubmit={onOpen}
-        />
-      </Box>
-      <Box mt="10" bg="white">
-        <DataTable data={events} tableLoading={tableLoading} />
-      </Box>
+        <Box w="full" display="flex" justifyContent="flex-end">
+          <Button
+            h="12"
+            rounded="lg"
+            display="block"
+            title="Add Events"
+            onSubmit={onOpen}
+          />
+        </Box>
+        <Box>
+          <DataTable data={events} tableLoading={tableLoading} />
+        </Box>
 
-      <Modal
-        initialFocusRef={initialRef}
-        finalFocusRef={finalRef}
-        isOpen={isOpen}
-        onClose={onClose}
-        size="lg"
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create Event</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl mt={4}>
-              <FormLabel>Title</FormLabel>
-              <CustomInput
-                autoFocus
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={onFormChangeHandler("title")}
-                id="title"
-                placeholder="Event Title"
-              />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Select Category</FormLabel>
-              <Select
-                placeholder="Select Category"
-                onChange={onFormChangeHandler("category")}
-                value={formData.category}
-                style={{ textTransform: "capitalize" }}
-              >
-                {categories.map(({ name, id }) => (
-                  <option
-                    style={{ textTransform: "capitalize" }}
-                    key={id}
-                    value={name}
-                  >
-                    {name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Date</FormLabel>
-              <CustomInput
-                type="date"
-                name="date"
-                value={format(formData.date, "yyyy-MM-dd")}
-                onChange={onFormChangeHandler("date")}
-                id="date"
-                min={new Date().toISOString().split("T")[0]}
-              />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Price</FormLabel>
-              <CustomInput
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={onFormChangeHandler("price")}
-                id="price"
-                placeholder="Event Price"
-              />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Notes</FormLabel>
-              <CustomInput
-                type="text"
-                name="Notes"
-                value={formData.notes}
-                onChange={onFormChangeHandler("notes")}
-                id="Notes"
-                placeholder="Notes"
-              />
-            </FormControl>
-          </ModalBody>
+        <Modal
+          initialFocusRef={initialRef}
+          finalFocusRef={finalRef}
+          isOpen={isOpen}
+          onClose={onClose}
+          size="lg"
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Create Event</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <FormControl mt={4}>
+                <FormLabel>Title</FormLabel>
+                <CustomInput
+                  autoFocus
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={onFormChangeHandler("title")}
+                  id="title"
+                  placeholder="Event Title"
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Select Category</FormLabel>
+                <Select
+                  placeholder="Select Category"
+                  onChange={onFormChangeHandler("category")}
+                  value={formData.category}
+                  style={{ textTransform: "capitalize" }}
+                >
+                  {categories.map(({ name, id }) => (
+                    <option
+                      style={{ textTransform: "capitalize" }}
+                      key={id}
+                      value={name}
+                    >
+                      {name}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Date</FormLabel>
+                <CustomInput
+                  type="date"
+                  name="date"
+                  value={format(formData.date, "yyyy-MM-dd")}
+                  onChange={onFormChangeHandler("date")}
+                  id="date"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Price</FormLabel>
+                <CustomInput
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={onFormChangeHandler("price")}
+                  id="price"
+                  placeholder="Event Price"
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Notes</FormLabel>
+                <CustomInput
+                  type="text"
+                  name="Notes"
+                  value={formData.notes}
+                  onChange={onFormChangeHandler("notes")}
+                  id="Notes"
+                  placeholder="Notes"
+                />
+              </FormControl>
+            </ModalBody>
 
-          <ModalFooter>
-            <Button
-              rounded="lg"
-              colorScheme="blue"
-              mr={3}
-              title="Save"
-              onClick={onEventSaveHandler}
-              isLoading={loading}
-              loadingText="Saving..."
-            />
-            <Button rounded="lg" onClick={onClose} title="Cancel" />
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Container>
+            <ModalFooter>
+              <Button
+                rounded="lg"
+                colorScheme="blue"
+                mr={3}
+                title="Save"
+                onClick={onEventSaveHandler}
+                isLoading={loading}
+                loadingText="Saving..."
+              />
+              <Button rounded="lg" onClick={onClose} title="Cancel" />
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Container>
+    </>
   );
 }
 

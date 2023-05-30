@@ -3,8 +3,7 @@ import {
   useReactTable,
   flexRender,
   getCoreRowModel,
-  ColumnDef,
-  SortingState,
+  getPaginationRowModel,
   getSortedRowModel,
   createColumnHelper,
 } from "@tanstack/react-table";
@@ -18,9 +17,11 @@ import {
   chakra,
   Stack,
   Skeleton,
+  Tfoot,
 } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { capitalize } from "lodash";
+import Pagination from "./Pagination";
 
 const columnHelper = createColumnHelper();
 
@@ -95,79 +96,87 @@ const DataTable = ({ data = [], tableLoading = false }) => {
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting,
     },
+    debugTable: true,
   });
 
   return (
-    <Table shadow="md">
-      <Thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <Tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
-              const meta = header.column.columnDef.meta;
-              return (
-                <Th
-                  key={header.id}
-                  onClick={header.column.getToggleSortingHandler()}
-                  isNumeric={meta?.isNumeric}
-                  p="6"
-                  color="black"
-                  fontWeight="semibold"
-                  fontSize="sm"
-                  textAlign="center"
-                  borderBottom="1px"
-                  borderColor="gray.400"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-
-                  <chakra.span pl="4">
-                    {header.column.getIsSorted() ? (
-                      header.column.getIsSorted() === "desc" ? (
-                        <TriangleDownIcon aria-label="sorted descending" />
-                      ) : (
-                        <TriangleUpIcon aria-label="sorted ascending" />
-                      )
-                    ) : null}
-                  </chakra.span>
-                </Th>
-              );
-            })}
-          </Tr>
-        ))}
-      </Thead>
-      <Tbody>
-        {tableLoading ? (
-          <TableLoading />
-        ) : (
-          table.getRowModel().rows.map((row) => (
-            <Tr
-              key={row.id}
-              _hover={{
-                backgroundColor: "gray.100",
-              }}
-            >
-              {row.getVisibleCells().map((cell) => {
-                const meta = cell.column.columnDef.meta;
+    <>
+      <Table mt="10" bg="white" shadow="md" variant="striped">
+        <Thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                const meta = header.column.columnDef.meta;
                 return (
-                  <Td
-                    textAlign="center"
-                    key={cell.id}
+                  <Th
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
                     isNumeric={meta?.isNumeric}
+                    p="6"
+                    color="black"
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    textAlign="center"
+                    borderBottom="1px"
+                    borderColor="gray.400"
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Td>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+
+                    <chakra.span pl="4">
+                      {header.column.getIsSorted() ? (
+                        header.column.getIsSorted() === "desc" ? (
+                          <TriangleDownIcon aria-label="sorted descending" />
+                        ) : (
+                          <TriangleUpIcon aria-label="sorted ascending" />
+                        )
+                      ) : null}
+                    </chakra.span>
+                  </Th>
                 );
               })}
             </Tr>
-          ))
-        )}
-      </Tbody>
-    </Table>
+          ))}
+        </Thead>
+        <Tbody>
+          {tableLoading ? (
+            <TableLoading />
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <Tr
+                key={row.id}
+                _hover={{
+                  backgroundColor: "gray.100",
+                }}
+              >
+                {row.getVisibleCells().map((cell) => {
+                  const meta = cell.column.columnDef.meta;
+                  return (
+                    <Td
+                      textAlign="center"
+                      key={cell.id}
+                      isNumeric={meta?.isNumeric}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Td>
+                  );
+                })}
+              </Tr>
+            ))
+          )}
+        </Tbody>
+      </Table>
+      <Pagination table={table} />
+    </>
   );
 };
 
