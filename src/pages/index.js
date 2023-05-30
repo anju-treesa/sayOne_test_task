@@ -1,20 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import {
   Box,
   Button,
-  Container,
-  FormControl,
-  FormLabel,
+  Center,
   HStack,
-  Image,
   Input,
-  Switch,
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/libs/firebase";
+import CategoryGrid from "@/components/CategoryGrid";
 
 function HomePage() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      await fetchCategories();
+    })();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "categories"));
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+          createdat: doc.data().createdat?.toDate(),
+        });
+      });
+
+      setCategories(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -67,10 +92,19 @@ function HomePage() {
         </Box>
       </Box>
 
-      {/* <Container maxW="container.lg">
-        <Text as="h1">Re-Events</Text>
-        <Text as="h2">Favourite events near you!</Text>
-      </Container> */}
+      <Box mt="10">
+        <Center>
+          <Text
+            fontSize="4xl"
+            fontWeight="semibold"
+            letterSpacing="wider"
+            color="gray.700"
+          >
+            Things to do around
+          </Text>
+        </Center>
+        <CategoryGrid data={categories} />
+      </Box>
     </>
   );
 }
