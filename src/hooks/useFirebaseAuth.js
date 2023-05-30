@@ -10,13 +10,19 @@ const formatAuthUser = (user) => ({
 export default function useFirebaseAuth() {
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { push } = useRouter();
+  const { push, pathname } = useRouter();
 
   const authStateChanged = async (authState) => {
     if (!authState) {
       setAuthUser(null);
       setLoading(false);
-      push("/");
+
+      if (pathname === "/events") {
+        push("/");
+      } else {
+        push(pathname);
+      }
+      console.log("pathname", pathname);
       return;
     }
 
