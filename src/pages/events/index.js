@@ -24,6 +24,7 @@ import {
   query,
   updateDoc,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 import * as Yup from "yup";
 import format from "date-fns/format";
@@ -37,6 +38,9 @@ import { db } from "@/libs/firebase";
 import CustomInput from "@/components/input/Input";
 import DataTable from "@/components/Table";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
+import DeleteModal from "@/components/deleteModal";
+
+const columnHelper = createColumnHelper();
 
 function EventListingPage() {
   const [categories, setCategories] = useState([]);
@@ -50,6 +54,7 @@ function EventListingPage() {
   });
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
@@ -58,6 +63,11 @@ function EventListingPage() {
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
+  } = useDisclosure();
   const { authUser } = useFirebaseAuth();
 
   useEffect(() => {
@@ -90,7 +100,7 @@ function EventListingPage() {
   }, [reload, authUser]);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen && !isDeleteOpen) {
       setFormData({
         title: "",
         category: "",
@@ -100,6 +110,7 @@ function EventListingPage() {
       });
       setIsEdit(false);
       setReload(false);
+      setDeleteLoading(false);
       return;
     }
 
@@ -120,7 +131,7 @@ function EventListingPage() {
         console.log("error", error);
       }
     })();
-  }, [isOpen]);
+  }, [isOpen, isDeleteOpen]);
 
   const onFormChangeHandler = (field) => (e) => {
     if (field === "date") {
@@ -208,8 +219,6 @@ function EventListingPage() {
     }
   };
 
-  const columnHelper = createColumnHelper();
-
   const columns = [
     columnHelper.accessor("title", {
       cell: (info) => info.getValue() && capitalize(info.getValue()),
@@ -249,7 +258,12 @@ function EventListingPage() {
               boxSize="4"
               onClick={onEventEditHandler(info.row.original)}
             />
-            <DeleteIcon cursor="pointer" boxSize="4" />
+            <DeleteIcon
+              color="red.500"
+              cursor="pointer"
+              boxSize="4"
+              onClick={onEventDeleteHandler(info.row.original)}
+            />
           </HStack>
         );
       },
@@ -264,6 +278,38 @@ function EventListingPage() {
       date: new Date(data.date),
     });
     onOpen();
+  };
+
+  const onEventDeleteHandler = (data) => () => {
+    setFormData(data);
+    onDeleteOpen();
+  };
+
+  const onEventDeleteSuccessHandler = async () => {
+    try {
+      setDeleteLoading(true);
+      await deleteDoc(doc(db, "events", formData.id));
+
+      toast({
+        description: "Event deleted successfully!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      setDeleteLoading(false);
+      setReload(true);
+      onDeleteClose();
+    } catch (error) {
+      setDeleteLoading(false);
+      toast({
+        description: error?.message || "An error occured while saving event.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
   };
 
   return (
@@ -394,6 +440,13 @@ function EventListingPage() {
             </ModalFooter>
           </ModalContent>
         </Modal>
+
+        <DeleteModal
+          deleteLoading={deleteLoading}
+          isOpen={isDeleteOpen}
+          onClose={onDeleteClose}
+          onDelete={onEventDeleteSuccessHandler}
+        />
       </Container>
     </>
   );
