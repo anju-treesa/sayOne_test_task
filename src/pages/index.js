@@ -12,6 +12,7 @@ import {
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/libs/firebase";
 import CategoryGrid from "@/components/CategoryGrid";
+import EventCard from "@/components/EventCard";
 
 function HomePage() {
   const [categories, setCategories] = useState([]);
@@ -100,10 +101,14 @@ function HomePage() {
             letterSpacing="wider"
             color="gray.700"
           >
-            Things to do around
+            Things to do around..
           </Text>
         </Center>
         <CategoryGrid data={categories} />
+      </Box>
+
+      <Box mt="10" p="12">
+        <EventCard />
       </Box>
     </>
   );
