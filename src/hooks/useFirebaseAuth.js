@@ -22,7 +22,6 @@ export default function useFirebaseAuth() {
       } else {
         push(pathname);
       }
-      console.log("pathname", pathname);
       return;
     }
 
