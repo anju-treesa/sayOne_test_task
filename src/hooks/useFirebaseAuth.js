@@ -25,7 +25,14 @@ export default function useFirebaseAuth() {
       return;
     }
 
-    push("/events");
+    if (pathname === "/login" || pathname === "/signup") {
+      push("/events");
+    } else if (pathname === "/") {
+      push("/");
+    } else {
+      push(pathname);
+    }
+
     setLoading(true);
     var formattedUser = formatAuthUser(authState);
     setAuthUser(formattedUser);
