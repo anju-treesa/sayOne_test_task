@@ -4,7 +4,7 @@ import ReactDatePicker from "react-datepicker";
 
 const DatePicker = ({ selectedDate = new Date(), onChange, ...props }) => {
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-    <Input value={value} onClick={onClick} ref={ref} />
+    <Input value={value} onClick={onClick} ref={ref} onChange={onChange} />
   ));
 
   return (

@@ -181,7 +181,7 @@ function EventListingPage() {
         }
       );
 
-      if (!isAfter(formData.startDate, formData.endDate)) {
+      if (!isAfter(formData.endDate, formData.startDate)) {
         throw new Error("Start date cannot be past end date!");
       }
 
