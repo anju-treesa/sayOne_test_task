@@ -5,7 +5,6 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  createColumnHelper,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -17,45 +16,10 @@ import {
   chakra,
   Stack,
   Skeleton,
-  Tfoot,
 } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { capitalize } from "lodash";
+
 import Pagination from "./Pagination";
-
-const columnHelper = createColumnHelper();
-
-const columns = [
-  columnHelper.accessor("title", {
-    cell: (info) => info.getValue() && capitalize(info.getValue()),
-    header: "Event Title",
-  }),
-  columnHelper.accessor("category", {
-    cell: (info) => info.getValue() && capitalize(info.getValue()),
-    header: "Category",
-  }),
-  columnHelper.accessor("date", {
-    cell: (info) => info.getValue(),
-    header: "Date",
-  }),
-  columnHelper.accessor("price", {
-    cell: (info) => {
-      if (!info.getValue()) {
-        return null;
-      }
-      const formatter = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-
-      return formatter.format(info.getValue());
-    },
-    header: "Price",
-    meta: {
-      isNumeric: true,
-    },
-  }),
-];
 
 const TableLoading = () => (
   <Tr p="10">
@@ -90,7 +54,7 @@ const TableLoading = () => (
   </Tr>
 );
 
-const DataTable = ({ data = [], tableLoading = false }) => {
+const DataTable = ({ columns = [], data = [], tableLoading = false }) => {
   const [sorting, setSorting] = React.useState([]);
 
   const table = useReactTable({
@@ -177,7 +141,7 @@ const DataTable = ({ data = [], tableLoading = false }) => {
           )}
         </Tbody>
       </Table>
-      <Pagination table={table} />
+      {!tableLoading && <Pagination table={table} />}
     </>
   );
 };

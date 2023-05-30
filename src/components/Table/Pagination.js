@@ -48,10 +48,13 @@ const Pagination = ({ table }) => {
         <ArrowRightIcon boxSize="3" />
       </Button>
       <Box>
-        <div>Page</div>
-        <strong>
-          {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-        </strong>
+        <div>
+          Page{" "}
+          <strong>
+            {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </strong>
+        </div>
       </Box>
       <Box>
         <Select

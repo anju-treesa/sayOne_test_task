@@ -14,17 +14,29 @@ import {
   Box,
   Select,
   useToast,
+  HStack,
 } from "@chakra-ui/react";
-import { collection, getDocs, addDoc, where, query } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  where,
+  query,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import * as Yup from "yup";
 import format from "date-fns/format";
+import Head from "next/head";
+import { createColumnHelper } from "@tanstack/react-table";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import capitalize from "lodash/capitalize";
 
 import Button from "@/components/button/Button";
 import { db } from "@/libs/firebase";
 import CustomInput from "@/components/input/Input";
 import DataTable from "@/components/Table";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
-import Head from "next/head";
 
 function EventListingPage() {
   const [categories, setCategories] = useState([]);
@@ -39,9 +51,11 @@ function EventListingPage() {
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [reload, setReload] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const finalRef = React.useRef(null);
   const initialRef = React.useRef(null);
+
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { authUser } = useFirebaseAuth();
@@ -84,6 +98,8 @@ function EventListingPage() {
         price: "",
         notes: "",
       });
+      setIsEdit(false);
+      setReload(false);
       return;
     }
 
@@ -106,11 +122,13 @@ function EventListingPage() {
     })();
   }, [isOpen]);
 
+  console.log("formData", formData);
+
   const onFormChangeHandler = (field) => (e) => {
     if (field === "date") {
       setFormData({
         ...formData,
-        [field]: new Date(e.target.value),
+        [field]: e.target.value,
       });
       return;
     }
@@ -144,19 +162,32 @@ function EventListingPage() {
         }
       );
 
-      await addDoc(collection(db, "events"), {
-        title: formData.title,
-        category: formData.category,
-        price: Number(formData.price),
-        date: formData.date,
-        notes: formData.notes,
-        userId: authUser.uid,
-      });
+      if (!isEdit) {
+        await addDoc(collection(db, "events"), {
+          title: formData.title,
+          category: formData.category,
+          price: Number(formData.price),
+          date: new Date(formData.date),
+          notes: formData.notes,
+          userId: authUser.uid,
+        });
+      } else {
+        await updateDoc(doc(db, "events", formData.id), {
+          title: formData.title,
+          category: formData.category,
+          price: Number(formData.price),
+          date: new Date(formData.date),
+          notes: formData.notes,
+          userId: authUser.uid,
+        });
+      }
 
       setLoading(false);
 
       toast({
-        description: "Event created successfully!",
+        description: isEdit
+          ? "Event updated successfully!"
+          : "Event created successfully!",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -177,6 +208,64 @@ function EventListingPage() {
         position: "top-right",
       });
     }
+  };
+
+  const columnHelper = createColumnHelper();
+
+  const columns = [
+    columnHelper.accessor("title", {
+      cell: (info) => info.getValue() && capitalize(info.getValue()),
+      header: "Event Title",
+    }),
+    columnHelper.accessor("category", {
+      cell: (info) => info.getValue() && capitalize(info.getValue()),
+      header: "Category",
+    }),
+    columnHelper.accessor("date", {
+      cell: (info) => info.getValue(),
+      header: "Date",
+    }),
+    columnHelper.accessor("price", {
+      cell: (info) => {
+        if (!info.getValue()) {
+          return null;
+        }
+        const formatter = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        });
+
+        return formatter.format(info.getValue());
+      },
+      header: "Price",
+      meta: {
+        isNumeric: true,
+      },
+    }),
+    columnHelper.accessor("Actions", {
+      cell: (info) => {
+        return (
+          <HStack justifyContent="center" spacing="5">
+            <EditIcon
+              cursor="pointer"
+              boxSize="4"
+              onClick={onEventEditHandler(info.row.original)}
+            />
+            <DeleteIcon cursor="pointer" boxSize="4" />
+          </HStack>
+        );
+      },
+      header: "Date",
+    }),
+  ];
+
+  const onEventEditHandler = (data) => () => {
+    setIsEdit(true);
+    setFormData({
+      ...data,
+      date: new Date(data.date),
+    });
+    onOpen();
   };
 
   return (
@@ -205,7 +294,11 @@ function EventListingPage() {
           />
         </Box>
         <Box>
-          <DataTable data={events} tableLoading={tableLoading} />
+          <DataTable
+            columns={columns}
+            data={events}
+            tableLoading={tableLoading}
+          />
         </Box>
 
         <Modal
@@ -217,7 +310,7 @@ function EventListingPage() {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Create Event</ModalHeader>
+            <ModalHeader>{isEdit ? "Edit Event" : "Create Event"}</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
               <FormControl mt={4}>
@@ -256,7 +349,10 @@ function EventListingPage() {
                 <CustomInput
                   type="date"
                   name="date"
-                  value={format(formData.date, "yyyy-MM-dd")}
+                  value={
+                    formData?.date &&
+                    format(new Date(formData?.date), "yyyy-MM-dd")
+                  }
                   onChange={onFormChangeHandler("date")}
                   id="date"
                   min={new Date().toISOString().split("T")[0]}
@@ -291,10 +387,10 @@ function EventListingPage() {
                 rounded="lg"
                 colorScheme="blue"
                 mr={3}
-                title="Save"
+                title={isEdit ? "Update" : "Save"}
                 onClick={onEventSaveHandler}
                 isLoading={loading}
-                loadingText="Saving..."
+                loadingText={isEdit ? "Updating..." : "Saving..."}
               />
               <Button rounded="lg" onClick={onClose} title="Cancel" />
             </ModalFooter>
