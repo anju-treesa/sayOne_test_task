@@ -122,8 +122,6 @@ function EventListingPage() {
     })();
   }, [isOpen]);
 
-  console.log("formData", formData);
-
   const onFormChangeHandler = (field) => (e) => {
     if (field === "date") {
       setFormData({
