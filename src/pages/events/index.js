@@ -15,7 +15,7 @@ import {
   Select,
   useToast,
 } from "@chakra-ui/react";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, where, query } from "firebase/firestore";
 import * as Yup from "yup";
 import format from "date-fns/format";
 
@@ -48,15 +48,21 @@ function EventListingPage() {
 
   useEffect(() => {
     (async () => {
+      if (!authUser?.uid) {
+        return;
+      }
+
       try {
         setTableLoading(true);
-        const querySnapshot = await getDocs(collection(db, "events"));
+        const querySnapshot = await getDocs(
+          query(collection(db, "events"), where("userId", "==", authUser?.uid))
+        );
         const data = [];
         querySnapshot.forEach((doc) => {
           data.push({
             id: doc.id,
             ...doc.data(),
-            date: format(doc.data().date?.toDate(), "dd-MMM-yyyy"),
+            date: format(doc.data()?.date?.toDate(), "dd-MMM-yyyy"),
           });
         });
 
@@ -67,7 +73,7 @@ function EventListingPage() {
         console.log("error", error);
       }
     })();
-  }, [reload]);
+  }, [reload, authUser]);
 
   useEffect(() => {
     if (!isOpen) {

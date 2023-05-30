@@ -27,11 +27,11 @@ const columnHelper = createColumnHelper();
 
 const columns = [
   columnHelper.accessor("title", {
-    cell: (info) => capitalize(info.getValue()),
+    cell: (info) => info.getValue() && capitalize(info.getValue()),
     header: "Event Title",
   }),
   columnHelper.accessor("category", {
-    cell: (info) => capitalize(info.getValue()),
+    cell: (info) => info.getValue() && capitalize(info.getValue()),
     header: "Category",
   }),
   columnHelper.accessor("date", {
@@ -40,6 +40,9 @@ const columns = [
   }),
   columnHelper.accessor("price", {
     cell: (info) => {
+      if (!info.getValue()) {
+        return null;
+      }
       const formatter = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -100,7 +103,6 @@ const DataTable = ({ data = [], tableLoading = false }) => {
     state: {
       sorting,
     },
-    debugTable: true,
   });
 
   return (
