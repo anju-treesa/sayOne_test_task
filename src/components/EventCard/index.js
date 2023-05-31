@@ -39,13 +39,15 @@ const EventCard = ({ title, startDate, endDate, category, price }) => {
                 : `${format(startDate, "dd")} - ${format(endDate, "dd")}`}
             </Text>
           </VStack>
-          <Stack mt="6" spacing="3" justifyContent="center">
-            <HStack>
-              <Heading size="md">{title}</Heading>
-              <Badge ml="1" px="2" py="1" colorScheme="green" rounded="md">
+          <Stack mt="6" spacing="3">
+            <VStack alignItems="start">
+              <Badge px="2" py="1" colorScheme="green" rounded="md">
                 {category}
               </Badge>
-            </HStack>
+              <Heading size="md" overflowWrap="break-word" inlineSize="150px">
+                {title}
+              </Heading>
+            </VStack>
             <Text color="blue.600" fontSize="lg">
               {formattedPrice}
             </Text>
