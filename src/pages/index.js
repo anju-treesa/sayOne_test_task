@@ -14,16 +14,17 @@ import {
 } from "@chakra-ui/react";
 import {
   collection,
-  endAt,
   getDocs,
+  limit,
   orderBy,
   query,
-  startAt,
-  where,
+  startAfter,
 } from "firebase/firestore";
 import { db } from "@/libs/firebase";
 import CategoryGrid from "@/components/CategoryGrid";
 import EventGrid from "@/components/EventGrid";
+
+const PAGINATION_LIMIT = 10;
 
 function HomePage() {
   const [categories, setCategories] = useState([]);
@@ -32,6 +33,7 @@ function HomePage() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [eventLoading, setEventLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
+  const [loadingLastKey, setLoadingLastKey] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -64,7 +66,13 @@ function HomePage() {
   const fetchEvents = async () => {
     try {
       setEventLoading(true);
-      const querySnapshot = await getDocs(collection(db, "events"));
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "events"),
+          orderBy("title", "desc"),
+          limit(PAGINATION_LIMIT)
+        )
+      );
       const data = [];
       querySnapshot.forEach((doc) => {
         data.push({
@@ -73,9 +81,43 @@ function HomePage() {
           startDate: doc.data()?.startDate?.toDate(),
           endDate: doc.data()?.endDate?.toDate(),
         });
+        setLoadingLastKey(doc.data().title);
       });
 
       setEvents(data);
+      setEventLoading(false);
+    } catch (error) {
+      setEventLoading(false);
+      console.error(error);
+    }
+  };
+
+  const fetchEventsNextBatch = async () => {
+    try {
+      setEventLoading(true);
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "events"),
+          orderBy("title", "desc"),
+          startAfter(loadingLastKey),
+          limit(PAGINATION_LIMIT)
+        )
+      );
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+          startDate: doc.data()?.startDate?.toDate(),
+          endDate: doc.data()?.endDate?.toDate(),
+        });
+        setLoadingLastKey(doc.data().title);
+      });
+
+      if (!data.length) {
+        setLoadingLastKey("");
+      }
+      setEvents([...events, ...data]);
       setEventLoading(false);
     } catch (error) {
       setEventLoading(false);
@@ -139,6 +181,7 @@ function HomePage() {
             bgSize="cover"
             bgPos="center"
             w="full"
+            fetchEventsNextBatch
             h="400px"
             opacity="0.45"
             bgImage="https://images.unsplash.com/photo-1531058020387-3be344556be6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
@@ -203,7 +246,25 @@ function HomePage() {
           {searchLoading || eventLoading ? (
             <EventLoading />
           ) : (
-            <EventGrid events={events} />
+            <>
+              <EventGrid events={events} />
+              {loadingLastKey.length ? (
+                <Button
+                  mt="10"
+                  onClick={fetchEventsNextBatch}
+                  colorScheme="green"
+                  w="full"
+                >
+                  Load more events
+                </Button>
+              ) : (
+                <Center mt="5">
+                  <Text fontSize="lg" fontWeight="semibold">
+                    You reach end of events.
+                  </Text>
+                </Center>
+              )}
+            </>
           )}
         </Box>
       </Box>
