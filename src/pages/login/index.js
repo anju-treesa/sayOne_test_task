@@ -78,8 +78,7 @@ const LoginPage = () => {
       </Head>
       <Flex
         flexDirection="column"
-        mt="-10"
-        h="calc(100vh - 4rem)"
+        h="calc(100vh - 6rem)"
         w="100vw"
         backgroundColor="gray.200"
         justifyContent="center"

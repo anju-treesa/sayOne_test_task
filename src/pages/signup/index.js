@@ -74,7 +74,7 @@ const SignUp = () => {
       });
 
       setIsLoading(false);
-      router.push("/home");
+      router.push("/events");
     } catch (error) {
       setIsLoading(false);
 
@@ -97,8 +97,7 @@ const SignUp = () => {
       </Head>
 
       <Flex
-        mt="-10"
-        h="calc(100vh - 4rem)"
+        h="calc(100vh - 6rem)"
         w="100vw"
         flexDirection="column"
         backgroundColor="gray.200"

@@ -337,7 +337,7 @@ function EventListingPage() {
       <Head>
         <title>Events - Re-Events | Favourite events near you!</title>
       </Head>
-      <Container maxW="container.xl">
+      <Container maxW="container.xl" mt="10">
         <Box
           as="h2"
           fontSize="2xl"

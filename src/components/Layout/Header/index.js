@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Container } from "@chakra-ui/react";
+import { Box, Button, Container, HStack, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 import { signOut, auth } from "@/libs/firebase";
+import Link from "next/link";
 
 const Header = () => {
   const router = useRouter();
@@ -50,7 +51,10 @@ const Header = () => {
               </Button>
             </Box>
           ) : (
-            <Box>
+            <HStack spacing="6">
+              <Link href="/events">
+                <Text fontSize="lg">My Events</Text>
+              </Link>
               <Button
                 mr="4"
                 colorScheme="blue"
@@ -58,7 +62,7 @@ const Header = () => {
               >
                 Sign Out
               </Button>
-            </Box>
+            </HStack>
           )}
         </Box>
       </Container>
