@@ -4,20 +4,34 @@ import {
   Box,
   Button,
   Center,
+  Grid,
   HStack,
   Input,
+  Skeleton,
+  Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  endAt,
+  getDocs,
+  orderBy,
+  query,
+  startAt,
+  where,
+} from "firebase/firestore";
 import { db } from "@/libs/firebase";
 import CategoryGrid from "@/components/CategoryGrid";
 import EventGrid from "@/components/EventGrid";
-import format from "date-fns/format";
 
 function HomePage() {
   const [categories, setCategories] = useState([]);
   const [events, setEvents] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [eventLoading, setEventLoading] = useState(false);
+  const [categoryLoading, setCategoryLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -28,6 +42,7 @@ function HomePage() {
 
   const fetchCategories = async () => {
     try {
+      setCategoryLoading(true);
       const querySnapshot = await getDocs(collection(db, "categories"));
       const data = [];
       querySnapshot.forEach((doc) => {
@@ -39,13 +54,16 @@ function HomePage() {
       });
 
       setCategories(data);
+      setCategoryLoading(false);
     } catch (error) {
+      setCategoryLoading(false);
       console.error(error);
     }
   };
 
   const fetchEvents = async () => {
     try {
+      setEventLoading(true);
       const querySnapshot = await getDocs(collection(db, "events"));
       const data = [];
       querySnapshot.forEach((doc) => {
@@ -58,9 +76,46 @@ function HomePage() {
       });
 
       setEvents(data);
+      setEventLoading(false);
     } catch (error) {
+      setEventLoading(false);
       console.error(error);
     }
+  };
+
+  const fetchEventsByKeyword = async () => {
+    try {
+      setSearchLoading(true);
+      const querySnapshot = await getDocs(query(collection(db, "events")));
+      const data = [];
+
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+          startDate: doc.data()?.startDate?.toDate(),
+          endDate: doc.data()?.endDate?.toDate(),
+        });
+      });
+
+      const filteredData = data.filter(({ title }) =>
+        title.toLowerCase().includes(searchKeyword.toLowerCase())
+      );
+
+      setEvents(filteredData);
+      setSearchLoading(false);
+    } catch (error) {
+      setSearchLoading(false);
+      console.error(error);
+    }
+  };
+
+  const handleSearchKeyword = (e) => {
+    setSearchKeyword(e.target.value);
+  };
+
+  const handleSearchEvents = async () => {
+    await fetchEventsByKeyword();
   };
 
   return (
@@ -74,7 +129,7 @@ function HomePage() {
           display="flex"
           alignItems="center"
           justifyContent="center"
-          zIndex="99"
+          zIndesearchLoadingx="99"
           bg="gray.900"
           position="relative"
         >
@@ -106,8 +161,19 @@ function HomePage() {
                 size="lg"
                 placeContent="Search events"
                 bgColor="white"
+                onChange={handleSearchKeyword}
+                value={searchKeyword}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearchEvents();
+                  }
+                }}
               />
-              <Button size="lg" colorScheme="green">
+              <Button
+                onClick={handleSearchEvents}
+                size="lg"
+                colorScheme="green"
+              >
                 Search
               </Button>
             </HStack>
@@ -124,11 +190,21 @@ function HomePage() {
               Things to do around..
             </Text>
           </Center>
-          <CategoryGrid data={categories} />
+          {categoryLoading ? (
+            <Box p="14">
+              <EventLoading />
+            </Box>
+          ) : (
+            <CategoryGrid data={categories} />
+          )}
         </Box>
 
         <Box px="12">
-          <EventGrid events={events} />
+          {searchLoading || eventLoading ? (
+            <EventLoading />
+          ) : (
+            <EventGrid events={events} />
+          )}
         </Box>
       </Box>
     </>
@@ -136,3 +212,30 @@ function HomePage() {
 }
 
 export default HomePage;
+
+const EventLoading = () => {
+  return (
+    <Grid templateColumns="repeat(4, 1fr)" gap="6">
+      <Stack>
+        <Skeleton w="sm" height="20px" />
+        <Skeleton w="sm" height="20px" />
+        <Skeleton w="sm" height="20px" />
+      </Stack>
+      <Stack>
+        <Skeleton w="sm" height="20px" />
+        <Skeleton w="sm" height="20px" />
+        <Skeleton w="sm" height="20px" />
+      </Stack>
+      <Stack>
+        <Skeleton w="sm" height="20px" />
+        <Skeleton w="sm" height="20px" />
+        <Skeleton w="sm" height="20px" />
+      </Stack>
+      <Stack>
+        <Skeleton w="sm" height="20px" />
+        <Skeleton w="sm" height="20px" />
+        <Skeleton w="sm" height="20px" />
+      </Stack>
+    </Grid>
+  );
+};
