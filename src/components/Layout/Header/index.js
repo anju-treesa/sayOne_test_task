@@ -25,11 +25,13 @@ const Header = () => {
       <Container maxW="container.lg">
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box
+            cursor="pointer"
             as="h2"
             fontSize="2xl"
             fontWeight="black"
             letterSpacing="wider"
             textTransform="uppercase"
+            onClick={() => router.push("/")}
           >
             Re-Events
           </Box>
