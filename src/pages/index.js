@@ -248,7 +248,7 @@ function HomePage() {
           ) : (
             <>
               <EventGrid events={events} />
-              {!loadingLastKey.length ? (
+              {loadingLastKey.length ? (
                 <Button
                   mt="10"
                   onClick={fetchEventsNextBatch}
