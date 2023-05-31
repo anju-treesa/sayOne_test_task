@@ -4,9 +4,9 @@ import EventCard from "../EventCard";
 
 const EventGrid = ({ events = [] }) => {
   return (
-    <Grid templateColumns="repeat(3, 1fr)" gap={6}>
+    <Grid templateColumns="repeat(4, 1fr)" gap="6">
       {events.map(({ id, ...restProps }) => (
-        <GridItem key={id}>
+        <GridItem w="100%" key={id}>
           <EventCard {...restProps} />
         </GridItem>
       ))}

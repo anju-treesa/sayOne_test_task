@@ -69,7 +69,7 @@ function HomePage() {
         <title>Events - Re-Events | Favourite events near you!</title>
       </Head>
 
-      <Box as="section" mt="-6">
+      <Box pb="20" h="100%" as="section">
         <Box
           display="flex"
           alignItems="center"
@@ -113,24 +113,23 @@ function HomePage() {
             </HStack>
           </VStack>
         </Box>
-      </Box>
+        <Box mt="10">
+          <Center>
+            <Text
+              fontSize="4xl"
+              fontWeight="semibold"
+              letterSpacing="wider"
+              color="gray.700"
+            >
+              Things to do around..
+            </Text>
+          </Center>
+          <CategoryGrid data={categories} />
+        </Box>
 
-      <Box mt="10">
-        <Center>
-          <Text
-            fontSize="4xl"
-            fontWeight="semibold"
-            letterSpacing="wider"
-            color="gray.700"
-          >
-            Things to do around..
-          </Text>
-        </Center>
-        <CategoryGrid data={categories} />
-      </Box>
-
-      <Box p="12">
-        <EventGrid events={events} />
+        <Box px="12">
+          <EventGrid events={events} />
+        </Box>
       </Box>
     </>
   );

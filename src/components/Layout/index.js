@@ -5,12 +5,12 @@ import Header from "./Header";
 
 const Layout = ({ children }) => {
   return (
-    <main>
+    <Box as="main" w="100%" h="100%" overflowX="hidden">
       <Header />
-      <Box pt="6" as="section" bg="gray.100" w="full" h="full">
+      <Box as="section" w="full" h="full">
         {children}
       </Box>
-    </main>
+    </Box>
   );
 };
 

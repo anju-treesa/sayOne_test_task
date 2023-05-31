@@ -21,7 +21,7 @@ const Header = () => {
   };
 
   return (
-    <Box bg="white" as="header" w="full" h="20" p="4" boxShadow="xl">
+    <Box bg="white" as="header" w="full" h="20" p="4" boxShadow="md">
       <Container maxW="container.lg">
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box

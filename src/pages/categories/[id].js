@@ -1,14 +1,23 @@
-import EventGrid from "@/components/EventGrid";
-import { db } from "@/libs/firebase";
-import { Box, Container, Text } from "@chakra-ui/react";
-import { doc, getDoc } from "firebase/firestore";
-import { capitalize } from "lodash";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import { Box, Container, Text } from "@chakra-ui/react";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { capitalize, isEmpty } from "lodash";
+
+import EventGrid from "@/components/EventGrid";
+import { db } from "@/libs/firebase";
 
 const EventCategoriesPage = () => {
   const [category, setCategory] = useState(null);
+  const [eventsForCategory, setEventsForCategory] = useState([]);
   const route = useRouter();
 
   useEffect(() => {
@@ -18,6 +27,14 @@ const EventCategoriesPage = () => {
       }
     })();
   }, [route]);
+
+  useEffect(() => {
+    (async () => {
+      if (!isEmpty(category)) {
+        await fetchEventsForCategory();
+      }
+    })();
+  }, [category]);
 
   const fetchCategory = async () => {
     try {
@@ -35,6 +52,29 @@ const EventCategoriesPage = () => {
     }
   };
 
+  const fetchEventsForCategory = async () => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "events"), where("category", "==", category?.name))
+      );
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+          startDate: doc.data()?.startDate?.toDate(),
+          endDate: doc.data()?.endDate?.toDate(),
+        });
+      });
+
+      setEventsForCategory(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  console.log("eventsForCategory", eventsForCategory);
+
   return (
     <>
       <Head>
@@ -42,14 +82,24 @@ const EventCategoriesPage = () => {
           {capitalize(category?.name)} - Re-Events | Favourite events near you!
         </title>
       </Head>
-      <Container maxW="container.lg">
+
+      <Box h="full" as="section" p="20">
         <Text fontSize="3xl" fontWeight="black" letterSpacing="wider">
           {category?.name?.toUpperCase()}
         </Text>
-        <Box mt="10">
-          <EventGrid />
-        </Box>
-      </Container>
+
+        {isEmpty(eventsForCategory) ? (
+          <Box mt="10">
+            <Text fontSize="2xl" fontWeight="medium" letterSpacing="wider">
+              No events found!
+            </Text>
+          </Box>
+        ) : (
+          <Box mt="10">
+            <EventGrid events={eventsForCategory} />
+          </Box>
+        )}
+      </Box>
     </>
   );
 };
