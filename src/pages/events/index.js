@@ -84,6 +84,7 @@ function EventListingPage() {
         const querySnapshot = await getDocs(
           query(collection(db, "events"), where("userId", "==", authUser?.uid))
         );
+        console.log(querySnapshot, "querySnapshot");
         const data = [];
         querySnapshot.forEach((doc) => {
           data.push({
@@ -292,10 +293,12 @@ function EventListingPage() {
   ];
 
   const onEventEditHandler = (data) => () => {
+    console.log(data, "data");
     setIsEdit(true);
     setFormData({
       ...data,
-      date: new Date(data.date),
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate),
     });
     onOpen();
   };
