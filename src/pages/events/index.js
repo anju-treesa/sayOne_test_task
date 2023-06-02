@@ -15,6 +15,10 @@ import {
   Select,
   useToast,
   HStack,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Stack,
 } from "@chakra-ui/react";
 import {
   collection,
@@ -30,7 +34,7 @@ import * as Yup from "yup";
 import format from "date-fns/format";
 import Head from "next/head";
 import { createColumnHelper } from "@tanstack/react-table";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { CheckIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import capitalize from "lodash/capitalize";
 
 import Button from "@/components/button/Button";
@@ -84,7 +88,6 @@ function EventListingPage() {
         const querySnapshot = await getDocs(
           query(collection(db, "events"), where("userId", "==", authUser?.uid))
         );
-        console.log(querySnapshot, "querySnapshot");
         const data = [];
         querySnapshot.forEach((doc) => {
           data.push({
@@ -165,9 +168,9 @@ function EventListingPage() {
     const schema = Yup.object().shape({
       title: Yup.string().required("Event title is required!"),
       category: Yup.string().required("Category is required!"),
-      price: Yup.number("Price should be a number").required(
-        "Price is required!"
-      ),
+      price: Yup.number("Price should be a number")
+        .transform((value) => (isNaN(value) ? undefined : value))
+        .required("Price is required!"),
     });
 
     try {
@@ -293,7 +296,6 @@ function EventListingPage() {
   ];
 
   const onEventEditHandler = (data) => () => {
-    console.log(data, "data");
     setIsEdit(true);
     setFormData({
       ...data,
@@ -425,17 +427,40 @@ function EventListingPage() {
                   onChange={onFormDateChangeHandler("endDate")}
                 />
               </FormControl>
+
+              {/* <InputGroup>
+                <InputLeftElement
+                  pointerEvents="none"
+                  color="gray.600"
+                  fontSize="1.2em"
+                  children="$"
+                />
+                <CustomInput placeholder="Enter amount" />
+              </InputGroup> */}
+
               <FormControl mt={4}>
                 <FormLabel>Price</FormLabel>
-                <CustomInput
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={onFormChangeHandler("price")}
-                  id="price"
-                  placeholder="Event Price"
-                />
+                <Stack spacing={4}>
+                  <InputGroup>
+                    <InputLeftElement
+                      pointerEvents="none"
+                      color="gray.600"
+                      fontSize="1.2em"
+                      children="$"
+                    />
+
+                    <CustomInput
+                      type="number"
+                      name="price"
+                      value={formData.price}
+                      onChange={onFormChangeHandler("price")}
+                      id="price"
+                      placeholder="Event Price"
+                    />
+                  </InputGroup>
+                </Stack>
               </FormControl>
+
               <FormControl mt={4}>
                 <FormLabel>Notes</FormLabel>
                 <CustomInput

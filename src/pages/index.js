@@ -20,9 +20,12 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
+import { useRouter } from "next/router";
+
 import { db } from "@/libs/firebase";
 import CategoryGrid from "@/components/CategoryGrid";
 import EventGrid from "@/components/EventGrid";
+import { isEmpty } from "lodash";
 
 const PAGINATION_LIMIT = 10;
 
@@ -34,13 +37,22 @@ function HomePage() {
   const [eventLoading, setEventLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [loadingLastKey, setLoadingLastKey] = useState("");
+  const [isSearch, setIssearch] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
       await fetchCategories();
-      await fetchEvents();
+      const params = router.query?.q || "";
+      if (!isEmpty(params)) {
+        setSearchKeyword(params);
+        handleSearchEvents(params);
+      } else {
+        const data = await fetchEvents();
+        setEvents(data);
+      }
     })();
-  }, []);
+  }, [router.query?.q]);
 
   const fetchCategories = async () => {
     try {
@@ -84,11 +96,12 @@ function HomePage() {
         setLoadingLastKey(doc.data().title);
       });
 
-      setEvents(data);
       setEventLoading(false);
+      return data;
     } catch (error) {
       setEventLoading(false);
       console.error(error);
+      return [];
     }
   };
 
@@ -125,23 +138,13 @@ function HomePage() {
     }
   };
 
-  const fetchEventsByKeyword = async () => {
+  const fetchEventsByKeyword = async (searchTerm) => {
     try {
       setSearchLoading(true);
-      const querySnapshot = await getDocs(query(collection(db, "events")));
-      const data = [];
-
-      querySnapshot.forEach((doc) => {
-        data.push({
-          id: doc.id,
-          ...doc.data(),
-          startDate: doc.data()?.startDate?.toDate(),
-          endDate: doc.data()?.endDate?.toDate(),
-        });
-      });
+      const data = await fetchEvents();
 
       const filteredData = data.filter(({ title }) =>
-        title.toLowerCase().includes(searchKeyword.toLowerCase())
+        title.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
       setEvents(filteredData);
@@ -156,8 +159,16 @@ function HomePage() {
     setSearchKeyword(e.target.value);
   };
 
-  const handleSearchEvents = async () => {
-    await fetchEventsByKeyword();
+  const handleSearchEvents = async (params) => {
+    const searchTerm = searchKeyword || params;
+    if (isEmpty(searchTerm)) {
+      setIssearch(false);
+      router.push(`/`);
+    } else {
+      setIssearch(true);
+      router.push(`/?q=${searchTerm}`);
+    }
+    await fetchEventsByKeyword(searchTerm);
   };
 
   return (
@@ -171,7 +182,7 @@ function HomePage() {
           display="flex"
           alignItems="center"
           justifyContent="center"
-          zIndesearchLoadingx="99"
+          zIndex="99"
           bg="gray.900"
           position="relative"
         >
@@ -181,7 +192,6 @@ function HomePage() {
             bgSize="cover"
             bgPos="center"
             w="full"
-            fetchEventsNextBatch
             h="400px"
             opacity="0.45"
             bgImage="https://images.unsplash.com/photo-1531058020387-3be344556be6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
@@ -241,7 +251,13 @@ function HomePage() {
             <CategoryGrid data={categories} />
           )}
         </Box>
-
+        {isSearch && (
+          <Center my="5">
+            <Text fontSize="2xl" letterSpacing="wider" fontWeight="semibold">
+              Search result for {searchKeyword}.
+            </Text>
+          </Center>
+        )}
         <Box px="12">
           {searchLoading || eventLoading ? (
             <EventLoading />

@@ -79,9 +79,10 @@ const SignUp = () => {
       setIsLoading(false);
 
       toast({
-        description: Array.isArray(error?.inner)
-          ? error?.inner[0]?.message
-          : error?.message || "Some error occured while registering.",
+        // description: Array.isArray(error?.inner)
+        //   ? error?.inner[0]?.message
+        //   : error?.message || "Some error occured while registering.",
+        description: "User Already exist!",
         status: "error",
         duration: 3000,
         isClosable: true,

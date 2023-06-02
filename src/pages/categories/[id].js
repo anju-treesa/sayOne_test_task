@@ -73,8 +73,6 @@ const EventCategoriesPage = () => {
     }
   };
 
-  console.log("eventsForCategory", eventsForCategory);
-
   return (
     <>
       <Head>

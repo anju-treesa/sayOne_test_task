@@ -10,27 +10,41 @@ const formatAuthUser = (user) => ({
 export default function useFirebaseAuth() {
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { push, pathname } = useRouter();
+  const { push, pathname, query } = useRouter();
 
   const authStateChanged = async (authState) => {
     if (!authState) {
       setAuthUser(null);
       setLoading(false);
-
       if (pathname === "/events") {
-        push("/");
+        push({
+          pathname: "/",
+          query: { ...query },
+        });
       } else {
-        push(pathname);
+        push({
+          pathname,
+          query: { ...query },
+        });
       }
       return;
     }
 
     if (pathname === "/login" || pathname === "/signup") {
-      push("/events");
+      push({
+        pathname: "/events",
+        query: { ...query },
+      });
     } else if (pathname === "/") {
-      push("/");
+      push({
+        pathname: "/",
+        query: { ...query },
+      });
     } else {
-      push(pathname);
+      push({
+        pathname,
+        query,
+      });
     }
 
     setLoading(true);
