@@ -16,9 +16,7 @@ import {
   useToast,
   HStack,
   InputGroup,
-  InputLeftElement,
-  InputRightElement,
-  Stack,
+  InputLeftAddon,
 } from "@chakra-ui/react";
 import {
   collection,
@@ -34,7 +32,7 @@ import * as Yup from "yup";
 import format from "date-fns/format";
 import Head from "next/head";
 import { createColumnHelper } from "@tanstack/react-table";
-import { CheckIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import capitalize from "lodash/capitalize";
 
 import Button from "@/components/button/Button";
@@ -428,37 +426,22 @@ function EventListingPage() {
                 />
               </FormControl>
 
-              {/* <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                  color="gray.600"
-                  fontSize="1.2em"
-                  children="$"
-                />
-                <CustomInput placeholder="Enter amount" />
-              </InputGroup> */}
-
               <FormControl mt={4}>
                 <FormLabel>Price</FormLabel>
-                <Stack spacing={4}>
-                  <InputGroup>
-                    <InputLeftElement
-                      pointerEvents="none"
-                      color="gray.600"
-                      fontSize="1.2em"
-                      children="$"
-                    />
 
-                    <CustomInput
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={onFormChangeHandler("price")}
-                      id="price"
-                      placeholder="Event Price"
-                    />
-                  </InputGroup>
-                </Stack>
+                <InputGroup>
+                  <InputLeftAddon children="$" />
+
+                  <CustomInput
+                    // ml={23}
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={onFormChangeHandler("price")}
+                    id="price"
+                    placeholder="Event Price"
+                  />
+                </InputGroup>
               </FormControl>
 
               <FormControl mt={4}>
